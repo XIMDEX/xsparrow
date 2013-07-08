@@ -32,6 +32,7 @@ ModulesManager::file('/inc/fsutils/FsUtils.class.php');
 ModulesManager::file(MODULE_XSPARROW_PATH . '/BuildParser.class.php');
 ModulesManager::file('/inc/helper/DebugLog.class.php');
 ModulesManager::file('/actions/addximlet/Action_addximlet.class.php');
+ModulesManager::file(MODULE_XSPARROW_PATH . '/inc/Theme.class.php');
 
 class Action_createproject extends ActionAbstract {
 
@@ -43,18 +44,33 @@ class Action_createproject extends ActionAbstract {
      * * */
     public function index() {
 
+        $themes = Theme::getAllThemes();
+        $arrayTheme = array();
+        foreach ($themes as $theme ) {
+            $themeDescription["name"] = $theme->_shortname;
+            $themeDescription["title"] = $theme->_title;
+            $themeDescription["description"] = $theme->_description;
+
+            $arrayTheme[] = $themeDescription;
+        }
+
         $values = array(
             "go_method" => "reloadProjectNode",
-            "name" => $this->name
+            "name" => $this->name,
+            "themes" => $arrayTheme
         );
+
+
         $template = "index";
         $jsFolder = "/modules/XSparrow/actions/createproject/resources/js/";
         $cssFolder = "/modules/XSparrow/actions/createproject/resources/css/";
+
         $this->addJs($jsFolder . "projectCreation.js");
         $this->addJs($jsFolder . "init.js");
         $this->addJs($jsFolder . "colorpicker.js");
 
 
+        $this->addCss($cssFolder . "style.css");
         $this->addCss($cssFolder . "colorpicker.css");
 
         $this->render($values, $template, 'default-3.0.tpl');
@@ -63,9 +79,82 @@ class Action_createproject extends ActionAbstract {
 
 
 
-    /**
-	Create ProjectParser from xml file
-    */	
+    public function createproject() {
+
+        //Creating project
+        $nodeID = $this->request->getParam("nodeid");
+        $name = $this->request->getParam("name");
+        $this->name = $name;
+        $nodeType = $this->GetTypeOfNewNode($nodeID);
+        $nodeTypeName = $nodeType["name"];
+
+        $nodeType = new NodeType();
+        $nodeType->SetByName($nodeTypeName);
+
+        $buildFile = sprintf('%s/../../project/build.xml', dirname(__FILE__));
+        $b = new BuildParser($buildFile);
+        $this->project = $b->getProject();
+
+        //Replacing config element from form values
+        $this->changeXimletValues();
+
+
+        //Creating project
+         $data = array(
+          'NODETYPENAME' => $nodeTypeName,
+          'NAME' => $name,
+          'NODETYPE' => $nodeType->GetID(),
+          'PARENTID' => 10000
+          );
+
+          $io = new BaseIO();
+          $projectId = $io->build($data);
+          if ($projectId < 1) {
+          return false;
+          }
+
+
+          $project = new Node($projectId);
+          $this->project->projectid = $projectId;
+
+          $channel = $this->project->channel;
+          $channel = $channel == '{?}' ? $this->getChannel() : $channel;
+          $this->project->channel = $channel;
+
+          $lang = $this->project->language;
+          $lang = $lang == '{?}' ? $this->getLanguage() : $lang;
+          $this->project->language = $lang;
+
+          $project->setProperty('Transformer', $this->project->Transformer);
+          $project->setProperty('channel', $this->project->channel);
+          $project->setProperty('language', $this->project->lang);
+
+          Module::log(Module::SUCCESS, "Project creation O.K.");
+
+
+          // TODO: ximlink
+          $links = $this->project->getXimlink();
+          $this->templates = $this->insertFiles($this->project->projectid, 'ximlink', $links);
+
+          // Update XSL
+
+          $xsls = $this->project->getPTD('XSL');
+          $ret = $this->insertFiles($this->project->projectid, 'xìmptd', $xsls);
+
+          // Servers
+          $servers = $this->project->getServers();
+          foreach ($servers as $server) {
+          $this->insertServer($server);
+          }
+
+          $template = "success";
+
+          $values = array();
+          $this->render($values, $template, 'default-3.0.tpl');
+    }
+
+
+
     private function buildProject(){
 
         $buildFile = sprintf('%s/../../project/build.xml', dirname(__FILE__));
@@ -245,7 +334,7 @@ class Action_createproject extends ActionAbstract {
         $this->addJs($jsFolder . "nextActions.js");
 	$this->addCss($cssFolder."createproject.css");
 
-        //$this->reloadNode(10000);		
+        //$this->reloadNode(10000);
         $template = "success";
 
 	$projectName = $this->request->getParam("name");
@@ -257,29 +346,29 @@ class Action_createproject extends ActionAbstract {
     }
 
 
-	
+
 	public function getIdNodeByName(){
 
 
-		$projectName = $this->request->getParam("projectName");	
+		$projectName = $this->request->getParam("projectName");
 		$nodeName = $this->request->getParam("nodeName");
 		$node = new Node(10000);
 		$arrayNodes = $node->GetByName($nodeName);
 		$oldestNode = 0;
 		foreach($arrayNodes as $nodeTarget){
-			
+
 			if ($oldestNode<$nodeTarget["IdNode"])
-				$oldestNode = $nodeTarget["IdNode"];			
+				$oldestNode = $nodeTarget["IdNode"];
 		}
 
-		
+
 		if ($oldestNode){
 			$result["idnode"] = $oldestNode;
-			echo json_encode($result);	
+			echo json_encode($result);
 		}else{
 			$result["error"] = 1;
 			echo json_encode($result);
-		}	
+		}
 	}
 
 
@@ -457,14 +546,13 @@ class Action_createproject extends ActionAbstract {
 //              debug::log($project, $file, $data);
                 Module::log(Module::ERROR, "ximdoc document " . $file->name . " couldn't be created ($docId)");
             }
-        
+
 
         	if ($isXimlet){
 	            $actionAddximlet = new Action_addximlet();
         	    $actionAddximlet->createRelXimletSection($parentId, $containerId, 1);
 	        }
 	}
-
         if (count($ret) == 0)
             $ret = false;
         return $ret;
