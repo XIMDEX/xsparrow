@@ -38,9 +38,29 @@ X.actionLoaded(function (event, fn, params){
 
   });
 
+   
+  fn('.advanced-btn').click(
+    function(){
+      $(this).next("div").toggleClass("advanced-settings");
+  });
+
   var btn = fn('.submit-button').get(0);
-  btn.beforeSubmit.add(function(event, button){
+  $(btn).click(function(event, button){
       projectCreation.createProject(fn);
+  });
+
+  fn("li.theme div.actions a.select").click(function(){
+	
+	return false;
+  });
+
+  
+  fn("li.theme div.actions a.custom").click(function(){
+	
+	var actionWidth = fn("div.action_container").width()*-1;
+
+	fn("div.action_content form, div.action_content div.customize-template-form").animate({"margin-left":actionWidth+"px"}, "slow");
+	return false;
   });
 
 });
