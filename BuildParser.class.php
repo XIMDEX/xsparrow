@@ -223,7 +223,7 @@ class Loader_Section extends Loader_AbstractNode {
 	}
 
 	public function getXimdocs() {
-		$query = sprintf('//ximdoccontainer/ximdoc');
+		$query = sprintf('//ximdoccontainer/document');
 		$items = $this->xpath->query($query, $this->node);
 		$ret = array();
 		foreach ($items as $item) {
@@ -326,7 +326,7 @@ class Loader_Server extends Loader_Section {
 	}
 
 	public function getXimdocs() {
-		$query = sprintf('//ximdoccontainer/ximdoc');
+		$query = sprintf('//ximdoccontainer/document');
 		$items = $this->xpath->query($query, $this->node);
 		$ret = array();
 		foreach ($items as $item) {
@@ -354,7 +354,7 @@ class Loader_XimDOC extends Loader_AbstractNode {
 	}
 
 	public function getPath() {
-		return $this->basepath . '/ximdoc/' . $this->name . '.xml';
+		return $this->basepath . '/documents/' . $this->name . '.xml';
 	}
 
 	public function getContent() {

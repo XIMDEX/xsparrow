@@ -12,7 +12,7 @@
 		overrideLocalPaths="0" enabled="1" previsual="0" description="Local" isServerOTF="false">
 
 		<ximdoccontainer>
-			<ximdoc name="index" nodetypename="XMLDOCUMENT" templatename="rng-bootstrap-based" channel="{?}" language="{?}" />
+			<document name="index" nodetypename="XMLDOCUMENT" templatename="rng-bootstrap-based" channel="{?}" language="{?}" />
 		</ximdoccontainer>
 		<!--<ximletcontainer>
 			<ximlet name="menu" nodetypename="XIMLET" templatename="rng-ximlet-bootstrap-menu"

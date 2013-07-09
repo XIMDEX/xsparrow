@@ -433,7 +433,7 @@ class Action_createproject extends ActionAbstract {
         $css = $server->getCSS("/bootstrap");
         $ret = $this->insertFiles($cssFolderId, 'bootstrap', $css);
 
-        // ximdoc
+        // document
         $docs = $server->getXimdocs();
         $ret = $this->insertDocs($server->serverid, $docs);
 
@@ -451,7 +451,7 @@ class Action_createproject extends ActionAbstract {
             $nodeTypeName = 'XIMLET';
             $nodeTypeContainer = "XIMLETCONTAINER";
         }else{
-            $xFolderName = 'ximdoc';
+            $xFolderName = 'documents';
             $nodeTypeName = 'XMLDOCUMENT';
             $nodeTypeContainer = "XMLCONTAINER";
         }
@@ -499,7 +499,7 @@ class Action_createproject extends ActionAbstract {
             $containerId = $io->build($data);
 
             if (!($containerId > 0)) {
-                Module::log(Module::ERROR, "ximdoc container " . $file->name . " couldn't be created ($containerId)");
+                Module::log(Module::ERROR, "document " . $file->name . " couldn't be created ($containerId)");
                 continue;
             }
 
@@ -544,7 +544,7 @@ class Action_createproject extends ActionAbstract {
                 Module::log(Module::SUCCESS, "Importing " . $file->name);
             } else if (!($docId > 0))  {
 //              debug::log($project, $file, $data);
-                Module::log(Module::ERROR, "ximdoc document " . $file->name . " couldn't be created ($docId)");
+                Module::log(Module::ERROR, "XML document " . $file->name . " couldn't be created ($docId)");
             }
 
 
