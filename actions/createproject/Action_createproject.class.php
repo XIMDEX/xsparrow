@@ -61,8 +61,12 @@ class Action_createproject extends ActionAbstract {
         );
 
 
+	$extraPath = "";
+	if (DEBUG_MODE)
+		$extraPath = DEBUG_FOLDER;
+
         $template = "index";
-        $jsFolder = "/modules/XSparrow/actions/createproject/resources/js/";
+        $jsFolder = "/modules/XSparrow/actions/createproject/resources/js/$extraPath";
         $cssFolder = "/modules/XSparrow/actions/createproject/resources/css/";
 
         $this->addJs($jsFolder . "projectCreation.js");

@@ -1,3 +1,8 @@
+.custom-colorpicker{
+	height: 19px;
+	width: 24px;
+	border: 2px solid #adadad;
+}
 .colorpicker {
 	width: 356px;
 	height: 176px;

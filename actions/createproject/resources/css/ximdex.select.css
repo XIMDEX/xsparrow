@@ -1,0 +1,70 @@
+div.small, div.small div{
+
+	width:28px;
+	height: 23px;
+	overflow: hidden;
+	cursor:pointer;
+	background-color: #414141;
+	z-index: 10;
+
+}
+
+div.collapsable{
+	z-index: 20;
+}
+
+div.text-align-left {
+
+	background: url(../images/text-align-left.png) no-repeat;
+}
+
+div.text-align-center {
+
+	background: url(../images/text-align-center.png) no-repeat;
+}
+
+div.text-align-right {
+
+	background: url(../images/text-align-right.png) no-repeat;
+}
+
+div.ximdexInput div.selection{
+	background-color: #74c5ba;
+}
+
+
+span.button-group {
+	display: none
+}
+div.ximdexInput:hover{
+	position: absolute;
+}
+
+div.ximdexInput{
+	position: absolute;
+}
+
+div.ximdexInput{
+	position: absolute;
+	display: block;
+}
+div.ximdexInput div.option:hover{
+	background-color: #74c5ba;
+
+}
+
+div.horizontal div{
+	display: inline-block;
+}
+
+div.ui-slider{
+	width:100px;
+	height: 8px;
+	margin-top:5px;
+	margin-bottom: 5px;
+}
+
+div.ui-slider a.ui-slider-handle{
+	width:14px;
+	height:14px;
+}
