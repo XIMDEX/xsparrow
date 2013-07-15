@@ -45,6 +45,7 @@ class Action_createproject extends ActionAbstract {
     public function index() {
 
         $themes = Theme::getAllThemes();
+        error_log($themes);
         $arrayTheme = array();
         foreach ($themes as $theme ) {
             $themeDescription["name"] = $theme->_shortname;
@@ -61,27 +62,32 @@ class Action_createproject extends ActionAbstract {
         );
 
 
-	$extraPath = "";
-	if (DEBUG_MODE)
-		$extraPath = DEBUG_FOLDER;
+    	$extraPath = "";
+    	if (DEBUG_MODE)
+    		$extraPath = DEBUG_FOLDER;
 
         $template = "index";
         $jsFolder = "/modules/XSparrow/actions/createproject/resources/js/$extraPath";
         $cssFolder = "/modules/XSparrow/actions/createproject/resources/css/";
 
+        $this->addJs($jsFolder . "colorpicker.js");
+        $this->addJs($jsFolder . "fontselector.js");
+        $this->addJs($jsFolder . "ximdex.select.js");
+        $this->addJs($jsFolder . "slider.js");
+
         $this->addJs($jsFolder . "projectCreation.js");
         $this->addJs($jsFolder . "init.js");
-        $this->addJs($jsFolder . "colorpicker.js");
+
+
 
 
         $this->addCss($cssFolder . "style.css");
         $this->addCss($cssFolder . "colorpicker.css");
+        $this->addCss($cssFolder . "fontselector.css");
+        $this->addCss($cssFolder . "ximdex.select.css");
 
         $this->render($values, $template, 'default-3.0.tpl');
     }
-
-
-
 
 
 
@@ -100,64 +106,79 @@ class Action_createproject extends ActionAbstract {
         $nodeType->SetByName($nodeTypeName);
 
         $b = new BuildParser($schemaVersion,$styleTheme);
+        $defaultParser = new BuildParser($schemaVersion);
+
         $this->project = $b->getProject();
 
-        //Replacing config element from form values
-        $this->changeXimletValues();
+        if ($styleTheme == DEFAULT_PROJECT){
+            $this->defaultProject = $this->project;
+        }else{
+            $this->defaultProject = $defaultParser->getProject();
+        }
 
 
         //Creating project
-         $data = array(
-          'NODETYPENAME' => $nodeTypeName,
-          'NAME' => $name,
-          'NODETYPE' => $nodeType->GetID(),
-          'PARENTID' => 10000
-          );
+        $data = array(
+            'NODETYPENAME' => $nodeTypeName,
+            'NAME' => $name,
+            'NODETYPE' => $nodeType->GetID(),
+            'PARENTID' => 10000
+            );
 
-          $io = new BaseIO();
-          $projectId = $io->build($data);
-          if ($projectId < 1) {
-          return false;
-          }
-
-
-          $project = new Node($projectId);
-          $this->project->projectid = $projectId;
-
-          $channel = $this->project->channel;
-          $channel = $channel == '{?}' ? $this->getChannel() : $channel;
-          $this->project->channel = $channel;
-
-          $lang = $this->project->language;
-          $lang = $lang == '{?}' ? $this->getLanguage() : $lang;
-          $this->project->language = $lang;
-
-          $project->setProperty('Transformer', $this->project->Transformer);
-          $project->setProperty('channel', $this->project->channel);
-          $project->setProperty('language', $this->project->lang);
-
-          Module::log(Module::SUCCESS, "Project creation O.K.");
+        $io = new BaseIO();
+        $projectId = $io->build($data);
+        if ($projectId < 1) {
+            return false;
+        }
 
 
-          // TODO: ximlink
-          $links = $this->project->getXimlink();
-          $this->templates = $this->insertFiles($this->project->projectid, 'ximlink', $links);
+        $project = new Node($projectId);
+        $this->project->projectid = $projectId;
 
-          // Update XSL
+        $this->setAdvancedSettings($project);
 
-          $xsls = $this->project->getPTD('XSL');
-          $ret = $this->insertFiles($this->project->projectid, 'xìmptd', $xsls);
+        Module::log(Module::SUCCESS, "Project creation O.K.");
 
-          // Servers
-          $servers = $this->project->getServers();
-          foreach ($servers as $server) {
-          $this->insertServer($server);
-          }
 
-          $template = "success";
+        // Update XSL
 
-          $values = array();
-          $this->render($values, $template, 'default-3.0.tpl');
+        $xsls = $this->project->getPTD('XSL');
+        $ret = $this->insertFiles($this->project->projectid, 'xìmptd', $xsls);
+
+        // Servers
+        $servers = $this->getServers();
+        foreach ($servers as $server) {
+            $this->insertServer($server);
+        }
+
+        $template = "success";
+
+        $values = array();
+        $this->render($values, $template, 'default-3.0.tpl');
+    }
+
+
+    private function getServers(){
+
+        $result = array();
+        $servers = $this->project->getServers();
+        if ($this->defaultProject && ($this->defaultProject !== $this->project)){
+            $defaultServers = $this->defaultProject->getServers();
+        }
+
+        foreach ($defaultServers as $server) {
+            if ($server->__get("name")){
+                $result[$server->__get("name")] = $server;
+            }
+        }
+
+        foreach ($servers as $server) {
+            if ($server->__get("name")){
+                $result[$server->__get("name")] = $server;
+            }
+        }
+
+        return $result;
     }
 
 
@@ -689,10 +710,6 @@ class Action_createproject extends ActionAbstract {
         }
     }
 
-    //Change the default values from form values.
-    private function changeXimletValues() {
-
-    }
 
     public function GetTypeOfNewNode($nodeID) {
 
@@ -719,6 +736,30 @@ class Action_createproject extends ActionAbstract {
         $result["friendlyName"]=$friendlyName;
         $resukt["idNodeType"]=$node->GetNodeType();
         return $result;
+    }
+
+
+    /**
+    *Set channel, languages and transformer for a project
+    *@param $idProject node obkect, id for project to set.
+    *@return nothing
+    */
+    private function setAdvancedSettings($project){
+
+        if ($project->GetID()){
+            $channel = $this->project->channel;
+            $channel = $channel == '{?}' ? $this->getChannel() : $channel;
+            $this->project->channel = $channel;
+
+            $lang = $this->project->language;
+            $lang = $lang == '{?}' ? $this->getLanguage() : $lang;
+            $this->project->language = $lang;
+
+            $project->setProperty('Transformer', $this->project->Transformer);
+            $project->setProperty('channel', $this->project->channel);
+            $project->setProperty('language', $this->project->lang);
+        }
+
     }
 
 }
