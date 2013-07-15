@@ -31,49 +31,6 @@ class BuildParser {
 	private $filePath = null;
 	private $doc = null;
 	private $xpath = null;
-	private $defaultBuildParser = null;
-
-	/**
-	*Constructor: if themeStyle exists and isn't  default, we create other
-	*buildParser instance with default values.
-	*@param $schemaVersion. it indicates the folder where find the project files
-	*@param $themeStyle (òptional). It could be Bootstrap, default or whatever
-	*/
-	public function BuildParser($schemaVersion, $themeStyle=null){
-
-		$patternBuildFilePath = Config::GetValue("AppRoot").MODULE_XSPARROW_PATH.PROJECTS_FOLDER."/$schemaVersion/%s/".PROJECT_CONFIG_FILENAME;
-		$isDefault = false;
-
-		if (!$themeStyle || (strtolower($themeStyle) === strtolower(DEFAULT_PROJECT))){
-			$isDefault = true;
-			$themeStyle = DEFAULT_PROJECT;
-		}
-
-		$buildFilePath = sprintf($patternBuildFilePath,$themeStyle);
-		$defaultBuildFilePath = sprintf($patternBuildFilePath,DEFAULT_PROJECT);
-
-		/*If build file not exists in projects folder for this version and theme
-		style, write message*/
-		if (!file_exists($buildFilePath)){
-			if ($isDefault){
-				XMD_Log::fatal(LOG_PREFIX."Default Build file doesn't found in this path: $buildFilePath.");
-				return false;
-			}
-			XMD_Log::error(LOG_PREFIX." Build file doesn't found in this path: $buildFilePath. It will load Default project");
-		}else{
-			$this->doc = DOMDocument::load($buildFilePath);
-			$this->xpath = new DOMXPath($this->doc);
-		}
-
-		if (!$isDefault){
-			if(!file_exists($defaultBuildFilePath)){
-				XMD_Log::fatal(LOG_PREFIX."Default Build file doesn't found in this path: $buildFilePath. It will load the current folder like default project");
-				$this->defaultBuildParser = $this;
-			}else{
-				$this->defaultBuildParser = new BuildParser($schemaVersion);
-			}
-		}
-	}
 
 	public function __construct($file, $path = null) {
 		$this->filePath = ( null === $path )?  $file : $path;
@@ -87,7 +44,7 @@ class BuildParser {
 
 	public function getProject() {
 		$query = '/project';
-		$items = $this->xpath->query($query);
+		$items = $this->xpath->query($query);                
 		return new Loader_Project($items->item(0), $this->xpath, dirname($this->filePath));
 	}
 }
@@ -299,10 +256,10 @@ class Loader_Section extends Loader_AbstractNode {
 		$path = $this->getPath() . '/images'.$extra_path;
 		$files = FsUtils::readFolder($path, false);
 		$ret = array();
-		foreach ($files as $file) {
+		foreach ($files as $file) {                        
                         if (!is_dir($file)){
                             $ret[] = new Loader_XimFile('IMAGEFILE', "$path/$file");
-
+                            
                         }
 		}
 		return $ret;
@@ -354,11 +311,11 @@ class Loader_Server extends Loader_Section {
 			? false
 			: true;
 	}
-
+        
         public function getPath(){
             return $this->basepath."/Server";
         }
-
+        
 	protected function getValidAttributes() {
 		return array(
 			'serverid', 'name', 'nodetypename', 'protocol',
@@ -382,9 +339,9 @@ class Loader_Server extends Loader_Section {
 		$path = $this->getPath() . '/css'.$extra_path;
 		$files = FsUtils::readFolder($path, false);
 		$ret = array();
-		foreach ($files as $file) {
-                        $ret[] = new Loader_XimFile('CSSFILE', "$path/$file");
-
+		foreach ($files as $file) {                    
+                        $ret[] = new Loader_XimFile('CSSFILE', "$path/$file"); 
+		
 		}
                 return $ret;
 	}

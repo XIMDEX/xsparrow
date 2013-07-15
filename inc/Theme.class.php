@@ -32,10 +32,8 @@ ModulesManager::file('/inc/xml/validator/XMLValidator_RNG.class.php');
 
 class Theme {
 
-
 	public $xml;
 	public $version;
-
 
 	/**
 	*Class Constructor
@@ -43,21 +41,17 @@ class Theme {
 	*/
 	public function Theme($theme){
 
-
 		$xml = false;
 		if (is_string($theme)){
 
 			//if valid xml
 			if ($this->isValidXml($theme)){
-
 				$xml = $theme;
-
 			}else{
 				$themesFolderPath = $theme;
 
 				if (substr($theme,-4)==".xml"){//if is filename with or without full path{
 					$themesFolderPath = substr($theme,0,-4);
-
 				}
 
 				$xml = $this->getXmlFromFolderName($themesFolderPath);
@@ -71,13 +65,11 @@ class Theme {
 
 		if ($theme and !$xml){
 			//Param not valid. Log Message
-			XMD_Log::warning("XSPARROW: Unable to load $theme theme.");
+			XMD_Log::warning(LOG_PREFIX."Unable to load $theme theme.");
 		}else if ($xml){
 			$this->getThemeProperties();
 		}
-
 	}
-
 
 	/**
 	* Indicate if this theme object is a valid one.
@@ -89,7 +81,6 @@ class Theme {
 		return false;
 	}
 
-
 	/**
 	*Get a xml from path
 	*@param $themeFolderName. Path to theme folder
@@ -97,24 +88,20 @@ class Theme {
 	*/
 	private function getXmlFromFolderName($themesFolderPath){
 
-		//
 		$result = false;
 		$lastSlash = strrpos($themesFolderPath,"/");
 		if ($lastSlash !== FALSE){ //It should be relative path
 			$themesFolderPath = substr($themesFolderPath,$lastSlash+1);
 		}
 
-		$fullPath = Config::GetValue("AppRoot").THEMES_FOLDER."/$themesFolderPath/$themesFolderPath.xml";
-
+		$fullPath = Config::GetValue("AppRoot").MODULE_XSPARROW_PATH.THEMES_FOLDER."/$themesFolderPath/$themesFolderPath.xml";
 
 		if (file_exists($fullPath)){
 			$xmlContent = FsUtils::file_get_contents($fullPath);
 			$result = $this->isValidXml($xmlContent)? $xmlContent : false;
 		}
-
 		return $result;
 	}
-
 
 	/**
 	*Get all attributes from xml content.
@@ -140,20 +127,14 @@ class Theme {
 						//Creating short attribute just for accesibility
 						$this->$shortNodeName = $child->nodeValue;
 					}
-
 				}else{//if not exists theme-properties
-					XMD_Log::error("XSPARROW: /xsparrow-theme/theme-properties node not found. Please check the xml.");
+					XMD_Log::error(LOG_PREFIX."/xsparrow-theme/theme-properties node not found. Please check the xml.");
 				}
 
 			}else { //if error on load
-
-				XMD_Log::error("XSPARROW: Unable to load xml document to get its properties".$this->xml );
+				XMD_Log::error(LOG_PREFIX."Unable to load xml document to get its properties".$this->xml );
 			}
-
 		}
-
-
-
 	}
 
 	/**
@@ -172,7 +153,6 @@ class Theme {
 			$domDocument = new DomDocument();
 			//Avoid warnings. $xml can be a path and we know it.
 			$result = @$domDocument->loadXML($xml);
-
 		}
 
 		if (!$result){
@@ -185,26 +165,24 @@ class Theme {
 
 		//If doesnt exist /xsparrow-theme node
 		if (!$xsparrowThemeNodes->length){
-			XMD_Log::warning("XSPARROW: The theme has not version number in xsparrow-theme node");
+			XMD_Log::warning(LOG_PREFIX."The theme has not version number in xsparrow-theme node");
 			return false;
 		}
 
 		$xsparrowThemeNode = $xsparrowThemeNodes->item(0);
 		//If doesnt exists version attribute.
 		if (!$xsparrowThemeNode->hasAttribute("version")){
-			XMD_Log::warning("XSPARROW: The theme has not version number in xsparrow-theme node");
+			XMD_Log::warning(LOG_PREFIX."The theme has not version number in xsparrow-theme node");
 			return false;
 		}
 
-
 		$this->version = $xsparrowThemeNode->getAttribute("version");
-		$rngFilePath = Config::GetValue("AppRoot").SCHEMES_FOLDER."/".SCHEME_BASENAME.$this->version.".xml";
+		$rngFilePath = Config::GetValue("AppRoot").MODULE_XSPARROW_PATH.SCHEMES_FOLDER."/".SCHEME_BASENAME.$this->version.".xml";
 
 		//if doesnt exist rng file.
 		if (!file_exists($rngFilePath)){
-			XMD_Log::warning("XSPARROW: scheme $rngFilePath not found");
+			XMD_Log::warning(LOG_PREFIX."scheme $rngFilePath not found");
 			return false;
-
 		}
 
 		$rngFileContent = FsUtils::file_get_contents($rngFilePath);
@@ -213,20 +191,15 @@ class Theme {
 		if ($result && !$lazy){
 			$rngValidator = new XMLValidator_RNG();
 			if(!$rngValidator->validate($rngFileContent,$xml)){
-				XMD_Log::error("XSPARROW: The theme doesn't validate the relaxng $rngFilePath");
+				XMD_Log::error(LOG_PREFIX."The theme doesn't validate the relaxng $rngFilePath");
 				return false;
 			}
 		}
 
 		return $result;
-
 	}
 
-
-
-
 	/******************STATIC METHODS******************/
-
 	/**
 	*Fet all themes in Theme folder
 	*@param $limit number of themes to get.
@@ -240,24 +213,26 @@ class Theme {
 			$offset=0;
 		}
 
-
-
-		$templateRootFolder = Config::GetValue("AppRoot").THEMES_FOLDER;//Root theme folder
-
-		$templateFolders = FsUtils::readFolder($templateRootFolder,false); //Getting all theme folders
+		//Root theme folder
+		$templateRootFolder = Config::GetValue("AppRoot").MODULE_XSPARROW_PATH.THEMES_FOLDER;
+		//Getting all theme folders
+		$templateFolders = FsUtils::readFolder($templateRootFolder,false);
 		$excluded = array();
+
 		foreach ($templateFolders as $templateFolder ) {
 
-			if (!is_dir($templateRootFolder."/".$templateFolder))
+			if (!is_dir($templateRootFolder."/".$templateFolder)){
 				$excluded[] = $templateFolder;
+			}
 		}
+
 		$templateFolders = array_values(array_diff($templateFolders, $excluded));
 		$i = $offset;
 		$numFound = 0;
 		$numTemplateFolders = count($templateFolders);
 
-
 		while($i < $numTemplateFolders){
+
 			if ($limit && is_int($limit) && $limit <= $numFound){
 				break;
 			}
@@ -265,26 +240,23 @@ class Theme {
 			$template = $templateFolders[$i];
 
 			if (is_dir($templateRootFolder."/".$template)){
-
 				$fileXml = "$templateRootFolder/$template/$template.xml";
 
 				if (file_exists($fileXml)){
 					$content = FsUtils::file_get_contents($fileXml);
 					$theme = new Theme($fileXml);
-					if ($theme->isValid()){
 
+					if ($theme->isValid()){
 						$result[] = $theme;
 						$numFound++;
 					}
-				}
 
+				}
 			}
+
 			$i++;
 		}
 
-
 		return $result;
-
 	}
-
 }

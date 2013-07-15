@@ -4,15 +4,15 @@
    		<xsl:choose>
    			<xsl:when test="@type='unorderer'">
    				<ul uid="{@uid}">
-                                 <xsl:choose>
-                                   	<xsl:when test="*">
-                                   		<xsl:apply-templates/>
-                                   	</xsl:when>
-                                   	<xsl:otherwise>
-                                          <li>[EmptyList]</li>
-                                   </xsl:otherwise>
-                                  </xsl:choose>
-   					
+            <xsl:choose>
+              	<xsl:when test="*">
+               		<xsl:apply-templates/>
+               	</xsl:when>
+               	<xsl:otherwise>
+                      <li>[EmptyList]</li>
+               </xsl:otherwise>
+              </xsl:choose>
+
    				</ul>
    			</xsl:when>
    			<xsl:when test="@type='unstyled'">
@@ -60,7 +60,7 @@
                                    	<xsl:otherwise>
                                           <dd>[EmptyList]</dd>
                                    </xsl:otherwise>
-                                  </xsl:choose>								
+                                  </xsl:choose>
    				</dl>
    			</xsl:when>
    			<xsl:otherwise>
@@ -73,8 +73,8 @@
                                           <li>[EmptyList]</li>
                                    </xsl:otherwise>
                                   </xsl:choose>
-   				</ul>				
-   			</xsl:otherwise>	
+   				</ul>
+   			</xsl:otherwise>
    		</xsl:choose>
    	</xsl:template>
 </xsl:stylesheet>

@@ -83,10 +83,14 @@ class Action_createproject extends ActionAbstract {
 
 
 
+
+
     public function createproject() {
 
         //Creating project
         $nodeID = $this->request->getParam("nodeid");
+        $schemaVersion = $this->request->getParam("schemaVersion");
+        $styleTheme = $this->request->getParam("styleTheme");
         $name = $this->request->getParam("name");
         $this->name = $name;
         $nodeType = $this->GetTypeOfNewNode($nodeID);
@@ -95,8 +99,7 @@ class Action_createproject extends ActionAbstract {
         $nodeType = new NodeType();
         $nodeType->SetByName($nodeTypeName);
 
-        $buildFile = sprintf('%s/../../project/build.xml', dirname(__FILE__));
-        $b = new BuildParser($buildFile);
+        $b = new BuildParser($schemaVersion,$styleTheme);
         $this->project = $b->getProject();
 
         //Replacing config element from form values
@@ -160,6 +163,7 @@ class Action_createproject extends ActionAbstract {
 
 
     private function buildProject(){
+
 
         $buildFile = sprintf('%s/../../project/build.xml', dirname(__FILE__));
         $b = new BuildParser($buildFile);
