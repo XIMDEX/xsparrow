@@ -58,127 +58,91 @@
 					<p class="type">{$theme.description}</p>
 				</li>
 				{/foreach}
-			<!--	<li class="theme">
-					<div class="img_container">
-						<img src="modules/XSparrow/Templates/cbdoc/cbdoc.png" alt="Cbdoc theme">
-					<div class="actions"><a href="" class="icon select" data-theme="cbdoc">Select</a><a href="" class="icon custom" data-theme="cbdoc">Custom</a></div>
-					</div>
-					<p class="title">CBDoc</p>
-					<p class="type">Single page with scroll</p>
-				</li>
-				<li class="theme">
-					<div class="img_container">
-						<img src="modules/XSparrow/Templates/geuin/geuin.png" alt="Geuin theme">
-					<div class="actions"><a href="" class="icon select">Select</a><a href="" class="icon custom">Custom</a></div>
-					</div>
-					<p class="title">Geuin</p>
-					<p class="type">Portal completo con un nivel de navegación</p>
-				</li>
-				<li class="theme">
-					<div class="img_container">
-						<img src="modules/XSparrow/Templates/ximdex/ximdex_theme.png" alt="Ximdex theme">
-					<div class="actions"><a href="" class="icon select">Select</a><a href="" class="icon custom">Custom</a></div>
-					</div>
-					<p class="title">Ximdex</p>
-					<p class="type">Portal completo con varios niveles de navegación</p>
-				</li>
-				<li class="theme">
-					<div class="img_container">
-						<img src="modules/XSparrow/Templates/blank/blank_theme.png" alt="Blank theme">
-					<div class="actions"><a href="" class="icon select">Select</a><a href="" class="icon custom">Custom</a></div>
-					</div>
-					<p class="title">Tema en blanco</p>
-					<p class="type">Tema base para construir desde cero</p>
-				</li>
-				<li class="theme">
-						<div class="img_container">
-						<img src="modules/XSparrow/Templates/ximdex/ximdex_theme.png" alt="Ximdex theme">
-					<div class="actions"><a href="" class="icon select">Select</a><a href="" class="icon custom">Custom</a></div>
-					</div>
-					<p class="title">Ximdex</p>
-					<p class="type">Portal completo con varios niveles de navegación</p>
-				</li>
-				<li class="theme">
-					<div class="img_container">
-						<img src="modules/XSparrow/Templates/cbdoc/cbdoc.png" alt="Cbdoc theme">
-					<div class="actions"><a href="" class="icon select">Select</a><a href="" class="icon custom">Custom</a></div>
-					</div>
-					<p class="title">CBDoc</p>
-					<p class="type">Single page with scroll</p>
-				</li>
-				<li class="theme">
-					<div class="img_container">
-						<img src="modules/XSparrow/Templates/geuin/geuin.png" alt="Geuin theme">
-					<div class="actions"><a href="" class="icon select">Select</a><a href="" class="icon custom">Custom</a></div>
-					</div>
-					<p class="title">Geuin</p>
-					<p class="type">Portal completo con un nivel de navegación</p>
-				</li>
-				<li class="theme">
-					<div class="img_container">
-						<img src="modules/XSparrow/Templates/cbdoc/cbdoc.png" alt="Cbdoc theme">
-					<div class="actions"><a href="" class="icon select">Select</a><a href="" class="icon custom">Custom</a></div>
-					</div>
-					<p class="title">CBDoc</p>
-					<p class="type">Single page with scroll</p>
-				</li>
-				<li class="theme">
-					<div class="img_container">
-						<img src="modules/XSparrow/Templates/geuin/geuin.png" alt="Geuin theme">
-					<div class="actions"><a href="" class="icon select">Select</a><a href="" class="icon custom">Custom</a></div>
-					</div>
-					<p class="title">Geuin</p>
-					<p class="type">Portal completo con un nivel de navegación</p>
-				</li>
-				<li class="theme">
-					<div class="img_container">
-						<img src="modules/XSparrow/Templates/cbdoc/cbdoc.png" alt="Cbdoc theme">
-					<div class="actions"><a href="" class="icon select">Select</a><a href="" class="icon custom">Custom</a></div>
-					</div>
-					<p class="title">CBDoc</p>
-					<p class="type">Single page with scroll</p>
-				</li>
-				<li class="theme">
-						<div class="img_container">
-						<img src="modules/XSparrow/Templates/ximdex/ximdex_theme.png" alt="Ximdex theme">
-					<div class="actions"><a href="" class="icon select">Select</a><a href="" class="icon custom">Custom</a></div>
-					</div>
-					<p class="title">Ximdex</p>
-					<p class="type">Portal completo con varios niveles de navegación</p>
-				</li>-->
 			</ul>
 
 	</form>
 
 	        <div class="customize-template-form">
-			<legend><span>{t}Create bootstrap project{/t}</span></legend>
-			<ol style="width:50%; float:left">
-				<li>
-					<label for="name" class="aligned">{t}Name(No spaces, please){/t}</label>
-					<input type="text" name="name" id="name" value="{$name}" class='cajaxg validable not_empty'/>
-				</li>
-					<li>
-					<label for="name" class="aligned">{t}Name(No spaces, please){/t}</label>
-					<input type="text" name="name" id="name" value="{$name}" class='cajaxg validable not_empty'/>
-				</li>
-				<li>
-	                               <label for="name" class="aligned">{t}Web's Title{/t}</label>
-	                               <input type="text" name="title" id="title" value="{$name}" class='cajaxg validable not_empty'/>
+			<div class="custom_options">
+				
+					<div class="site_header">
+						<h3>{t}Header{/t}</h3>
+						<dl>
+							<dt>Layout</dt>
+							<dd><select id="select1" name="text-align" class="ximdexInput small vertical collapsable button">
+									<option value="left" selected="selected"></option>
+									<option value="center"></option>
+									<option value="right" ></option>
+								</select></dd>
+							<dt>Background</dt>
+							<dd>
+								<input type="color" name='secundary_color' id="secundary_color" value="#006b6c" class='input_colorpicker button bg-color'/>
+								<span class="img-uploader icon button"><input type="file" /></span>
+								<select id="select1" name="bg-position" class="ximdexInput small vertical collapsable icon bg-position button">
+									<option value="lt" selected="selected"></option>
+									<option value="rt"></option>
+									<option value="lb" ></option>
+									<option value="rb" ></option>
+									<option value="cc" ></option>
+								</select>
+								<select id="select1" name="bg-repeat" class="ximdexInput small vertical collapsable icon bg-repeat button">
+									<option value="repeat-x" selected="selected"></option>
+									<option value="repeat-y"></option>
+									<option value="no-repeat" ></option>
+									<option value="repeat" ></option>
+								</select>
+							</dd>
+							<dt>Text</dt>
+							<dd>
+								<input type="color" name='secundary_color' id="secundary_color" value="#006b6c" class='input_colorpicker button font-color'/>
+								<select id="select1" name="text-align" class="text-align ximdexInput small vertical collapsable icon button">
+									<option value="left" selected="selected"></option>
+									<option value="center"></option>
+									<option value="right" ></option>
+									<option value="justify" ></option>
+								</select>
+								<!--<span class="font-size"><input type="range" name="rango" id="rango" min="0" max="100" step="1"/></span>
+								<select id="fonts" class="font-selector">
+									<option value="Chelsea Market">Chelsea Market</option>
+									<option value="Droid Serif" selected="selected">Droid Serif</option>
+									<option value="Ruluko">Ruluko</option>
+									<option value="Ruda">Ruda</option>
+									<option value="Magra">Magra</option>
+									<option value="Esteban">Esteban</option>
+									<option value="Lora">Lora</option>
+									<option value="Jura">Jura</option>
+									<option value="Ubuntu">Ubuntu</option>
+								</select>-->
+								
+							</dd>
+						</dl>
 
-				</li>
-				<li>
-					<label for="email" class="aligned">{t}Principal color{/t}</label>
-					<input type="text" name="principal_color" id="principal_color" value="#006B6C" class='cajaxg validable not_empty input_colorpicker'/>
-				</li>
-				<li>
-					<label for="password_" class="aligned">{t}Secundary color{/t}</label>
-					<input type="text" name='secundary_color' id="secundary_color" value="#ffffff" class='caja validable not_empty input_colorpicker'/>
-				</li>
-				<li>
+					</div>
+
+				
+		<!--
+					
+
+								<input type="range" name="rango" id="rango" min="0" max="100" step="1"/>
+
+				
 					<label for="password_repeated" class="aligned">{t}Font color{/t}</label>
-					<input type="text" name='font_color' id="font_color" value="#000000" class='caja validable not_empty input_colorpicker'/>
-				</li>
-			</ol>
+					<input type="color" name='secundary_color' id="secundary_color" value="#ffffff" class='input_colorpicker'/>
+
+					<select id="fonts">
+									<option value="Chelsea Market">Chelsea Market</option>
+									<option value="Droid Serif" selected="selected">Droid Serif</option>
+									<option value="Ruluko">Ruluko</option>
+									<option value="Ruda">Ruda</option>
+									<option value="Magra">Magra</option>
+									<option value="Esteban">Esteban</option>
+									<option value="Lora">Lora</option>
+									<option value="Jura">Jura</option>
+									<option value="Ubuntu">Ubuntu</option>
+								</select>
+
+				
+			</div>
 			<div class="bsPreviewContainer" style="width:40%; float:left; clear:right; padding:10px; background-color:#006B6C">
 				<div style="min-height:20px; padding:10px; text-align:right;background-color:#ffffff" class="bsPreviewTitle">
 					<h4>Title</h4>
@@ -187,7 +151,7 @@
 					A Sample text to show the color text.
 					Use the form to change the color.
 					You will can change all of this in config node, in ximlet folder.
-				</div>
+				</div>-->
 			</div>
 		</div>
 </div>

@@ -1,4 +1,4 @@
-div.small, div.small div{
+/*div.small, div.small div{
 
 	width:28px;
 	height: 23px;
@@ -36,22 +36,6 @@ div.ximdexInput div.selection{
 span.button-group {
 	display: none
 }
-div.ximdexInput:hover{
-	position: absolute;
-}
-
-div.ximdexInput{
-	position: absolute;
-}
-
-div.ximdexInput{
-	position: absolute;
-	display: block;
-}
-div.ximdexInput div.option:hover{
-	background-color: #74c5ba;
-
-}
 
 div.horizontal div{
 	display: inline-block;
@@ -67,4 +51,4 @@ div.ui-slider{
 div.ui-slider a.ui-slider-handle{
 	width:14px;
 	height:14px;
-}
+}*/

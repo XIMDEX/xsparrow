@@ -40,8 +40,8 @@ class Action_createproject extends ActionAbstract {
     public $name ="XSparrow";
 
     /**
-     * Main function, first step in the creation project process
-     * * */
+     *<p>Main function, first step in the creation project process</p>
+     **/
     public function index() {
 
         $themes = Theme::getAllThemes();
@@ -78,9 +78,6 @@ class Action_createproject extends ActionAbstract {
         $this->addJs($jsFolder . "projectCreation.js");
         $this->addJs($jsFolder . "init.js");
 
-
-
-
         $this->addCss($cssFolder . "style.css");
         $this->addCss($cssFolder . "colorpicker.css");
         $this->addCss($cssFolder . "fontselector.css");
@@ -89,8 +86,10 @@ class Action_createproject extends ActionAbstract {
         $this->render($values, $template, 'default-3.0.tpl');
     }
 
-
-
+    /**
+    *<p>Creating a project from a form.</p>
+    *<p>Get all the values from the request params.</p>
+    */
     public function createproject() {
 
         //Creating project
@@ -139,17 +138,24 @@ class Action_createproject extends ActionAbstract {
 
         Module::log(Module::SUCCESS, "Project creation O.K.");
 
-
-        // Update XSL
-
-        $xsls = $this->project->getPTD('XSL');
-        $ret = $this->insertFiles($this->project->projectid, 'xìmptd', $xsls);
-
-        // Servers
+        //Get Servers, Schemes and Templates under project node.
+        //Defaults and overloading.
         $servers = $this->getServers();
+        $schemes = $this->getSchemes();
+        $templates = $this->getTemplates();
+
+        foreach($schemes as $scheme){
+            $this->insertFiles($this->project->projectid, "schemes", array($scheme));
+        }
+
+        foreach($templates as $template){
+            $this->insertFiles($this->project->projectid, "templates", array($template));
+        }
+
         foreach ($servers as $server) {
             $this->insertServer($server);
         }
+
 
         $template = "success";
 
@@ -158,6 +164,11 @@ class Action_createproject extends ActionAbstract {
     }
 
 
+    /**
+    *<p>Get the match Servers from default and specific project</p>
+    *<p>Defaults are mandatory, but specific can overload it.</p>
+    * @return array with all Loader_Server objects.
+    */
     private function getServers(){
 
         $result = array();
@@ -181,119 +192,67 @@ class Action_createproject extends ActionAbstract {
         return $result;
     }
 
-
-
-    private function buildProject(){
-
-
-        $buildFile = sprintf('%s/../../project/build.xml', dirname(__FILE__));
-        $b = new BuildParser($buildFile);
-        $this->project = $b->getProject();
-    }
-
-    /***
-    Build a project from $nodeId and $name
+    /**
+    *<p>Get the match Schemes from default and specific project</p>
+    *<p>Defaults are mandatory, but specific can overload it.</p>
+    * @return array with all Loader_XimFile objects.
     */
-    private function createNodeProject($name,$nodeId=10000){
+    private function getSchemes(){
+        $result = array();
 
-        $nodeType = $this->GetTypeOfNewNode($nodeId);
-        $nodeTypeName = $nodeType["name"];
-
-        $nodeType = new NodeType();
-        $nodeType->SetByName($nodeTypeName);
-
-        $this->buildProject();
-
-        //Creating project
-         $data = array(
-          'NODETYPENAME' => $nodeTypeName,
-          'NAME' => $name,
-          'NODETYPE' => $nodeType->GetID(),
-          'PARENTID' => 10000
-          );
-
-          $io = new BaseIO();
-          $projectId = $io->build($data);
-          if ($projectId < 1) {
-          return false;
-          }
-
-          return $projectId;
-    }
-
-    public function loadProject(){
-
-        //Creating project
-
-        $name = $this->request->getParam("name");
-        $this->name = $name;
-
-        $projectId = $this->createNodeProject($name);
-
-        if (!$projectId){
-            $result["failure"]=1;
-        }else{
-            $project = new Node($projectId);
-            $this->project->projectid = $projectId;
-
-            $channel = $this->project->channel;
-            $channel = $channel == '{?}' ? $this->getChannel() : $channel;
-            $this->project->channel = $channel;
-
-            $lang = $this->project->language;
-            $lang = $lang == '{?}' ? $this->getLanguage() : $lang;
-            $this->project->language = $lang;
-
-            $project->setProperty('Transformer', $this->project->Transformer);
-            $project->setProperty('channel', $this->project->channel);
-            $project->setProperty('language', $this->project->lang);
-
-            Module::log(Module::SUCCESS, "Project creation O.K.");
-
-            $result["success"]=1;
-            $resultProject["idproject"] = $projectId;
-            $resultProject["lang"] = $lang;
-            $resultProject["channel"] = $channel;
-            $result["project"]=$resultProject;
-
+        $schemes = $this->project->getServers();
+        if ($this->defaultProject && ($this->defaultProject !== $this->project)){
+            $defaultSchemes = $this->defaultProject->getSchemes();
         }
-        echo json_encode($result);
+
+        foreach ($defaultSchemes as $scheme){
+            if ($scheme->__get("filename")){
+                $result[$scheme->__get("filename")] = $scheme;
+            }
+        }
+
+        foreach ($schemes as $scheme){
+            if ($scheme->__get("filename")){
+                $result[$scheme->__get("filename")] = $scheme;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+    *<p>Get the match Templates from default and specific project</p>
+    *<p>Defaults are mandatory, but specific can overload it.</p>
+    * @return array with all Loader_XimFile objects.
+    */
+    private function getTemplates(){
+
+        $result = array();
+
+        $templates = $this->project->getTemplates();
+        if ($this->defaultProject && ($this->defaultProject !== $this->project)){
+            $defaultTemplates = $this->defaultProject->getTemplates();
+        }
+
+        foreach ($defaultTemplates as $template){
+            if ($template->__get("filename")){
+                $result[$template->__get("filename")] = $template;
+            }
+        }
+
+        foreach ($template as $template){
+            if ($template->__get("filename")){
+                $result[$template->__get("filename")] = $template;
+            }
+        }
+
+        return $result;
     }
 
 
-    public function loadProjectXimPtd(){
-
-        $idProject = $this->request->getParam("idProject");
-        $this->name = $this->request->getParam("name");
-
-        $this->buildProject();
-        $this->project->projectid = $idProject;
-
-        $xsls = $this->project->getPTD('XSL');
-        $ret = $this->insertFiles($this->project->projectid, 'ximptd', $xsls);
-
-        $result["success"]=1;
-        echo json_encode($result);
-
-    }
-
-    public function loadProjectXimPvd(){
-        // RNGs
-        $idProject = $this->request->getParam("idProject");
-
-        $this->buildProject();
-        $this->project->projectid = $idProject;
-
-        $pvds = $this->project->getPVD('RNG');
-        $this->templates = $this->insertFiles($this->project->projectid, 'ximpvd', $pvds);
-
-
-        $result["success"]=1;
-        $result["project"]["templates"]=$this->templates;
-        echo json_encode($result);
-    }
-
-    //Get Possible Channel by default. Giving priority to html or web channel.
+    /**
+    *<p>Get Possible Channel by default. Giving priority to html or web channel.</p>
+    */
     function getChannel() {
         $channels = Channel::GetAllChannels();
         if (is_null($channels)) {
@@ -324,44 +283,13 @@ class Action_createproject extends ActionAbstract {
         return $langId;
     }
 
-
-    function loadServer(){
-        $idProject = $this->request->getParam("idProject");
-        $this->templates = $this->request->getParam("templates");
-        $this->lang = $this->request->getParam("lang");
-        $this->channel = $this->request->getParam("channel");
-
-        $foundError = false;
-
-        $this->buildProject();
-        $this->project->projectid = $idProject;
-        $this->project->channel = $this->request->getParam("channel");
-        $this->project->language = $this->request->getParam("lang");
-        // Servers
-
-      $servers = $this->project->getServers();
-      foreach ($servers as $server) {
-          $idServer = $this->insertServer($server);
-          if (!$idServer)
-            $foundError = true;
-      }
-
-      if ($foundError)
-        $result["failure"]=1;
-      else
-        $result["success"]=1;
-
-        echo json_encode($result);
-
-    }
-
     public function reloadProjectNode(){
 
 
         $jsFolder = "/modules/XSparrow/actions/createproject/resources/js/";
-	$cssFolder = "/modules/XSparrow/actions/createproject/resources/css/";
+	    $cssFolder = "/modules/XSparrow/actions/createproject/resources/css/";
         $this->addJs($jsFolder . "nextActions.js");
-	$this->addCss($cssFolder."createproject.css");
+	   $this->addCss($cssFolder."createproject.css");
 
         //$this->reloadNode(10000);
         $template = "success";
@@ -375,33 +303,7 @@ class Action_createproject extends ActionAbstract {
     }
 
 
-
-	public function getIdNodeByName(){
-
-
-		$projectName = $this->request->getParam("projectName");
-		$nodeName = $this->request->getParam("nodeName");
-		$node = new Node(10000);
-		$arrayNodes = $node->GetByName($nodeName);
-		$oldestNode = 0;
-		foreach($arrayNodes as $nodeTarget){
-
-			if ($oldestNode<$nodeTarget["IdNode"])
-				$oldestNode = $nodeTarget["IdNode"];
-		}
-
-
-		if ($oldestNode){
-			$result["idnode"] = $oldestNode;
-			echo json_encode($result);
-		}else{
-			$result["error"] = 1;
-			echo json_encode($result);
-		}
-	}
-
-
-    function insertServer($server) {
+    private function insertServer($server) {
 
         $nodeType = new NodeType();
         $nodeType->SetByName($server->nodetypename);
@@ -431,6 +333,8 @@ class Action_createproject extends ActionAbstract {
 
         $nodeServer->class->AddChannel($physicalServerId, $this->project->channel);
         Module::log(Module::SUCCESS, "Server creation O.K.");
+
+
 
 
         // common
@@ -601,7 +505,6 @@ class Action_createproject extends ActionAbstract {
             return false;
         }
 
-
         $io = new BaseIO();
 
         foreach ($files as $file) {
@@ -625,18 +528,7 @@ class Action_createproject extends ActionAbstract {
             );
 
             $id = $io->build($data);
-
-            //Updating url_path for docxap node
-            if ($file->basename == "docxap.xsl") {
-
-                $newNode = new Node($id);
-                $docxapContent = $newNode->GetContent();
-                $urlPath = Config::GetValue("UrlRoot");
-                $docxapContent = str_replace("{URL_PATH}", $urlPath, $docxapContent);
-                $docxapContent = str_replace("{PROJECT_NAME}", $this->name, $docxapContent);
-                $newNode->SetContent($docxapContent);
-
-            }
+            $this->specialCase($id, $file);
 
             if ($id > 0) {
                 $ret[$file->filename] = $id;
@@ -650,6 +542,21 @@ class Action_createproject extends ActionAbstract {
         if (count($ret) == 0)
             $ret = false;
         return $ret;
+    }
+
+    /**
+    *Process file if its a special one.
+    */
+    private function specialCase($idNode, &$file){
+
+        $node = new Node($idNode);
+        if ($file->basename == "docxap.xsl"){
+            $docxapContent = $node->GetContent();
+            $urlPath = Config::GetValue("UrlRoot");
+            $docxapContent = str_replace("{URL_PATH}", $urlPath, $docxapContent);
+            $docxapContent = str_replace("{PROJECT_NAME}", $this->name, $docxapContent);
+            $node->SetContent($docxapContent);
+        }
     }
 
     function updateXsl($parentId, $files) {
@@ -740,8 +647,8 @@ class Action_createproject extends ActionAbstract {
 
 
     /**
-    *Set channel, languages and transformer for a project
-    *@param $idProject node obkect, id for project to set.
+    *<p>Set channel, languages and transformer for a project</p>
+    *@param $idProject node object, id for project to set.
     *@return nothing
     */
     private function setAdvancedSettings($project){

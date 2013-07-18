@@ -34,12 +34,11 @@ class BuildParser {
 	private $defaultBuildParser = null;
 
 	/**
-	*Constructor: if themeStyle exists and isn't  default, we create other
-	*buildParser instance with default values.
+	*<p>Constructor load project from schema and theme style. It could be the default one.</p>
 	*@param $schemaVersion. it indicates the folder where find the project files
 	*@param $themeStyle (òptional). It could be Bootstrap, default or whatever
 	*/
-	public function BuildParser($schemaVersion, $themeStyle=null){
+	public function __construct($schemaVersion, $themeStyle=null){
 
 		$patternBuildFilePath = Config::GetValue("AppRoot").MODULE_XSPARROW_PATH.PROJECTS_FOLDER."/$schemaVersion/%s/".PROJECT_CONFIG_FILENAME;
 		$isDefault = false;
@@ -65,26 +64,12 @@ class BuildParser {
 			$this->xpath = new DOMXPath($this->doc);
 		}
 
-		if (!$isDefault){
-			if(!file_exists($defaultBuildFilePath)){
-				XMD_Log::fatal(LOG_PREFIX."Default Build file doesn't found in this path: $buildFilePath. It will load the current folder like default project");
-				$this->defaultBuildParser = $this;
-			}else{
-				$this->defaultBuildParser = new BuildParser($schemaVersion);
-			}
-		}
 	}
 
-	public function __construct($file, $path = null) {
-		$this->filePath = ( null === $path )?  $file : $path;
-                $this->doc = DOMDocument::load($file);
-		if (! $this->doc instanceof DOMDocument) {
-			throw new Exception(_('Error parsing XML document'));
-			return;
-		}
-		$this->xpath = new DOMXPath($this->doc);
-	}
-
+	/**
+	*<p>Get a Loader_Project object from the build.xml file.</p>
+	*@return Loader_Project object
+	**/
 	public function getProject() {
 		$query = '/project';
 		$items = $this->xpath->query($query);
@@ -187,6 +172,22 @@ class Loader_Project extends Loader_AbstractNode {
 		return array('projectid', 'name', 'nodetypename', 'Transformer', 'channel', 'language');
 	}
 
+	public function getSchemes() {
+		$query = sprintf("/project/schemes/scheme");
+		$items = $this->xpath->query($query, $this->node);
+		$ret = array();
+		foreach ($items as $item) {
+			$template = new Loader_Scheme($item, $this->xpath, $this->getPath());
+			$nodeTypeName = "RNGVISUALTEMPLATE";
+			if($template->__get("nodetypename") &&
+				$template->__get("nodeTypeName") == "VISUALTEMPLATE"){
+				$nodeTypeName = "VISUALTEMPLATE";
+			}
+			$ret[] = new Loader_XimFile($nodeTypeName,$templates->getPath());
+		}
+		return $ret;
+	}
+
 	public function getServers() {
 		$query = sprintf("//section[@nodetypename='SERVER']");
 		$items = $this->xpath->query($query, $this->node);
@@ -207,43 +208,20 @@ class Loader_Project extends Loader_AbstractNode {
 		return $ret;
 	}
 
-	public function getPTD($type='PTD') {
+	public function getTemplates($type='XSL') {
 
-		$extension = $type == 'PTD' ? 'xml' : 'xsl';
-		$nodetypename = $type == 'PTD' ? 'TEMPLATE' : 'XSLTEMPLATE';
+		//Backward compatibility. Allow xml transformer.
+		$extension = $type == 'XSL' ? 'xsl': 'xml';
+		$nodetypename = $type == 'XSL' ? 'XSLTEMPLATE': 'TEMPLATE';
 
 
-		$path = $this->getPath() . '/ximptd';
+		$path = $this->getPath() . '/templates';
                 $files = FsUtils::readFolder($path, false);
 		$ret = array();
 		foreach ($files as $file) {
                         if (preg_match(sprintf('/\.%s$/', $extension), $file)) {
 				$ret[] = new Loader_XimFile($nodetypename, "$path/$file");
                         }
-		}
-		return $ret;
-	}
-
-	// TODO: Compatibility with PVDs, not just RNGs
-	public function getPVD($type='RNG') {
-
-		$extension = 'xml';
-		$nodetypename = $type == 'RNG' ? 'RNGVISUALTEMPLATE' : 'VISUALTEMPLATE';
-
-		$path = $this->getPath() . '/ximpvd';
-                $files = FsUtils::readFolder($path, false);
-		$ret = array();
-
-		foreach ($files as $file) {
-			$isRng = preg_match('/^rng-/', $file);
-                	if (preg_match(sprintf('/\.%s$/', $extension), $file)) {
-				$insert = $type == 'RNG'
-					? $isRng
-					: !$isRng;
-				if ($insert) {
-					$ret[] = new Loader_XimFile($nodetypename, "$path/$file");
-				}
-			}
 		}
 		return $ret;
 	}
@@ -300,10 +278,10 @@ class Loader_Section extends Loader_AbstractNode {
 		$files = FsUtils::readFolder($path, false);
 		$ret = array();
 		foreach ($files as $file) {
-                        if (!is_dir($file)){
-                            $ret[] = new Loader_XimFile('IMAGEFILE', "$path/$file");
+            if (!is_dir($file)){
+                $ret[] = new Loader_XimFile('IMAGEFILE', "$path/$file");
 
-                        }
+            }
 		}
 		return $ret;
 	}
@@ -417,6 +395,24 @@ protected function getValidAttributes() {
 
 	public function getPath() {
 		return $this->basepath . '/ximlet/' . $this->name . '.xml';
+	}
+
+	public function getContent() {
+		return FsUtils::file_get_contents($this->getPath());
+	}
+
+	public function setContent($content) {
+		return FsUtils::file_put_contents($this->getPath(), $content);
+	}
+}
+
+class Loader_Scheme extends Loader_AbstractNode{
+	protected function getValidAttributes(){
+		return array("name", "nodetypename");
+	}
+
+	public function getPath(){
+		return $this->basepath."/schemes/".$this->name.".xml";
 	}
 
 	public function getContent() {

@@ -29,10 +29,10 @@ $(function() {
         this._createShowOptions();
 
         if (this.options.collapsable){
-          this._on(this.xInput.parent(),{
+         /* this._on(this.xInput.parent(),{
             mouseenter:"_hover",
             mouseleave:"_hover"
-          });
+          });*/
         } else{
           this.xInput.hide();
           this.xInput.parent().css(this.showOptions.expand);
@@ -91,21 +91,21 @@ $(function() {
           this.xInput.attr("name",this.element.attr("name"));
           this.xInput.attr("id",this.element.attr("id"));
           this.xInput.attr("style",this.element.attr("style"));
-          this.xInput.addClass("selection");
+          this.xInput.addClass("selection icon");
           $divContainer.append(this.xInput);
-
+          $divOptionContainer = $("<div/>").addClass("options");
 
           var $options = this.element.children();
 
           for (var i=0; i < $options.length; i++){
 
             $newOption = this._addOption($options[i]);
-            $divContainer.append($newOption);
+            $divOptionContainer.append($newOption);
           }
 
+          $divContainer.append($divOptionContainer);
           this.element.before($divContainer);
           this.element.hide();
-
       },
 
       _addOption: function(option){
@@ -115,7 +115,7 @@ $(function() {
         var $auxOption = $(option);
         var $newOption = $("<div/>")
                         .addClass(this.element.attr("name")+"-"+$auxOption.attr("value"))
-                        .addClass("option")
+                        .addClass("option icon")
                         .attr("data-option",i)
                         .attr("title",$auxOption.attr("value"))
                         .text($auxOption.text());
@@ -157,8 +157,10 @@ $(function() {
         e.stopPropagation();
       },
 
-      _hover: function(e, ui) {
+     /* _hover: function(e, ui) {
 
+          console.log(this.xOptionElements);
+          console.log(this.showOptions.collapse);
           if (e.originalEvent.type === "mouseenter" || e.originalEvent.type === "mouseover") {
               var height = this.xInput.height()*(this.xOptionElements.length+1);
               this.xInput.parent().stop(true,true).animate(this.showOptions.expand,200);
@@ -167,7 +169,7 @@ $(function() {
             this.xInput.parent().stop(true,true).animate(this.showOptions.collapse,200);
 
           }
-      },
+      },*/
 
       _changeOptionSelected: function(index){
 
@@ -180,17 +182,10 @@ $(function() {
             this.xInput.siblings().removeClass("selection");
             this.xOptionElements[index].element.addClass("selection");
           }
-
-
-
-      },
+      }
 
 
     });
 
- $("#select1").inputSelect();
- $("#select2").inputSelect();
- $("#select3").inputSelect();
- $("#select4").inputSelect();
 
 });

@@ -59,6 +59,7 @@
 				$(cal).data('colorpicker').newColor.css('backgroundColor', '#' + HSBToHex(hsb));
 			},
 			keyDown = function (ev) {
+				console.log(ev);
 				var pressedKey = ev.charCode || ev.keyCode || -1;
 				if ((pressedKey > charMin && pressedKey <= 90) || pressedKey == 32) {
 					return false;
@@ -375,6 +376,8 @@
 			init:function(opt){
 				this.each(function(){
 					$newElement =$("<div/>").addClass("custom-colorpicker");
+					var classes = $(this).attr("class");
+					$newElement.addClass(classes);
 					$(this).before($newElement);
 					$(this).hide();
 				});
