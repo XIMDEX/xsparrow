@@ -21,6 +21,7 @@ $.widget('oal.fontSelector', {
     var font, fontEl, fontLabel, fontName, fonts, label, _i, _j, _len, _len2, _ref, _ref2,
       _this = this;
     this.element.hide();
+    var classes = this.element.attr("class");
     fonts = [];
     _ref = this.element.children();
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -31,12 +32,13 @@ $.widget('oal.fontSelector', {
       fonts.push([fontName, fontLabel]);
     }
     if (!this.selected) this.selected = fonts[0][0];
-    this.dropdown = $('<div class="fontSelector ui-widget"></div>');
+    this.dropdown = $('<div class="fontSelector ui-widget"></div>').addClass(classes);
     this.list = $('<ul class="fonts"></ul>');
     for (_j = 0, _len2 = fonts.length; _j < _len2; _j++) {
       font = fonts[_j];
       _ref2 = font, font = _ref2[0], label = _ref2[1];
-      this.element.before("<link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=" + font + ":400,700,400italic,700italic'></link>");
+      //this.element.before("<link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=" + font + ":400,700,400italic,700italic'></link>");
+      $("head").append("<link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=" + font + ":400,700,400italic,700italic'></link>");
       fontEl = $("<li style=\"font-family: '" + font + "'\">" + label + "</li>");
       fontEl.data('font', font);
       if (font === this.selected) {

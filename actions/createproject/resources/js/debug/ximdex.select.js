@@ -62,7 +62,7 @@ $(function() {
           switch(this.options.direction){
 
             case "horizontal":
-              expandDimension = this.xInput.width()*(this.xOptionElements.length+extraSize);
+              
               this.showOptions.expand = {width:expandDimension};
               collapseDimension = this.xInput.width();
               this.showOptions.collapse = {width:collapseDimension};

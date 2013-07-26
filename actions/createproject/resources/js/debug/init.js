@@ -1,21 +1,33 @@
 X.actionLoaded(function (event, fn, params){
-  $("input[type='color']").ColorPicker(
+  fn("input.input_colorpicker").ColorPicker(
   {
     onSubmit: function(hsb, hex, rgb, el) {
-                $(el).css("background-color","#"+hex);
+                $(el).val(hex);
                 $(this).ColorPicker("hide");
               },
 
     onChange : function(hsb, hex, rgb){
                 var el = $(this).data("colorpicker").el;
-                $(el).css("background-color","#"+hex);
+                var actionContainer = $(el).parentsUntil(".action_container");
 
+                $(el).val("#"+hex);
+                switch ($(el).attr("name")){
+                  case "principal_color":
+                          $("div.bsPreviewContainer", actionContainer).css("background-color","#"+hex);
+                          break;
+                  case "secundary_color":
+                          $("div.bsPreviewTitle", actionContainer).css("background-color","#"+hex);
+                          break;
+                  case "font_color":
+                          $("div.bsPreviewContent", actionContainer).css("color","#"+hex);
+                          break;
+
+                }
               }
 
   }).bind('keyup', function(){
         $(this).ColorPickerSetColor(this.value);
   });
-
 
   fn("input#title").bind("keyup", function(){
 
@@ -26,8 +38,6 @@ X.actionLoaded(function (event, fn, params){
 
   });
 
-
- fn("select.ximdexInput").inputSelect();
 
   fn('.advanced-btn').click(
     function(){
@@ -44,6 +54,8 @@ X.actionLoaded(function (event, fn, params){
 	return false;
   });
 
+ $("select.ximdexInput").inputSelect();
+
 
   fn("li.theme div.actions a.custom").click(function(){
 
@@ -54,17 +66,10 @@ X.actionLoaded(function (event, fn, params){
 	return false;
   });
 
-    fn('select#fonts').fontSelector({
-    options: {
-      inSpeed: 250,
-      outSpeed: "slow",
-    },
-    fontChange: function(e, ui) {
-      //alert("The font is set to "+ui.font+" (was "+ui.oldFont+" before)");
-    },
-    styleChange: function(e, ui) {
-      //alert("The value of "+ui.style+" was set to "+ui.value);
-    }
+});
+
+  $('.custom_options h3').click(function(){
+    $(this).next().slideToggle();
+    $(this).toggleClass('opened').toggleClass('closed');
   });
 
-});
