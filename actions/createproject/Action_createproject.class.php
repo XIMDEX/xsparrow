@@ -669,6 +669,26 @@ class Action_createproject extends ActionAbstract {
 
     }
 
+    public function loadPreview(){
+
+        $values = array();
+        $template = "preview";
+        $this->render($values, $template, 'basic_html.tpl');
+    }
+
+    public function getTheme(){
+
+        $themeName = $this->request->getParam("theme");
+        $theme = new Theme($themeName);
+        header('Content-type: text/xml');
+        if ($theme){
+            print $theme->xml;
+        }
+        else
+            print "<error/>";
+
+        exit();
+    }
 }
 
 ?>

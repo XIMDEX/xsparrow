@@ -51,6 +51,15 @@
 
 	<define name="main.class">
 		<element name="main">
+			<ref name="header.class"/>
+			<ref name="content.class"/>
+			<ref name="footer.class"/>
+			<xim:description>Configuration</xim:description>
+		</element>
+	</define>
+
+	<define name="header.class">
+		<element name="header">
 			<attribute name="background-color" xim:type="color"/>
 			<attribute name="background-image" xim:type="imageSelector"/>
 			<attribute name="background-position">
@@ -75,16 +84,6 @@
 					<value type="string">repeat-y</value>
 				</choice>
 			</attribute>
-			<attribute name="font-color" xim:type="color"/>
-			<ref name="header.class"/>
-			<ref name="container.class"/>
-			<ref name="footer.class"/>
-			<xim:description>Configuration</xim:description>
-		</element>
-	</define>
-
-	<define name="header.class">
-		<element name="header">
 			<attribute name="font-color" xim:type="color"/>
 			<attribute name="font-size"/>
 			<attribute name="image" xim:type="imageSelector"/>
@@ -154,8 +153,8 @@
 		</element>
 	</define>
 
-	<define name="container.class">
-		<element name="container">
+	<define name="content.class">
+		<element name="content">
 			<attribute name="left_column" >
 				<choice>
 					<value type="string">No</value>

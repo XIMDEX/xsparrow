@@ -52,7 +52,7 @@
 				<li class="theme">
 					<div class="img_container">
 						<img src="modules/XSparrow/themes/{$theme.name}/{$theme.name}.png" alt="{$theme.title}">
-					<div class="actions"><a href="" class="icon select" data-theme="blank">Select</a><a data-theme="blank" href="" class="icon custom">Custom</a></div>
+					<div class="actions"><a href="" class="icon select" data-theme="{$theme.name}">Select</a><a data-theme="{$theme.name}" href="" class="icon custom">Custom</a></div>
 					</div>
 					<p class="title">{$theme.title}</p>
 					<p class="type">{$theme.description}</p>
@@ -64,7 +64,7 @@
 
 	        <div class="customize-template-form">
 			<div class="custom_options">
-				
+
 					<div class="site_header">
 						<h3 class="opened icon">{t}Header{/t}</h3>
 						<dl>
@@ -76,7 +76,7 @@
 								</select></dd>
 							<dt>Background</dt>
 							<dd>
-								<input type="color" name='secundary_color' id="secundary_color" value="#006b6c" class='input_colorpicker button bg-color'/>
+								<input type="color" name='background-color' data-tag="header" data-attribute="background-color" id="secundary_color" value="#006b6c" class='input_colorpicker button bg-color'/>
 								<span class="img-uploader icon button"><input type="file" /></span>
 								<select id="select1" name="bg-position" class="ximdexInput small vertical collapsable icon bg-position button">
 									<option value="lt" selected="selected"></option>
@@ -94,8 +94,8 @@
 							</dd>
 							<dt>Text</dt>
 							<dd>
-								<input type="color" name='secundary_color' id="secundary_color" value="#006b6c" class='input_colorpicker button font-color icon'/>
-								<select id="select1" name="text-align" class="text-align ximdexInput small vertical collapsable icon button">
+								<input type="color" name='font-color' id="secundary_color" value="#006b6c" class='input_colorpicker button font-color icon' data-tag="header" data-attribute="font-color"/>
+								<select id="select1" name="text-align" data-tag="header-title" data-attribute="align" class="text-align ximdexInput small vertical collapsable icon button">
 									<option value="left" selected="selected"></option>
 									<option value="center"></option>
 									<option value="right" ></option>
@@ -115,7 +115,7 @@
 									<option value="Jura">Jura</option>
 									<option value="Ubuntu">Ubuntu</option>
 								</select>
-								
+
 							</dd>
 						</dl>
 
@@ -131,7 +131,7 @@
 								</select></dd>
 							<dt>Background</dt>
 							<dd>
-								<input type="color" name='secundary_color' id="secundary_color" value="#006b6c" class='input_colorpicker button bg-color'/>
+								<input type="color" name='secundary_color' id="secundary_color" value="#006b6c" class='input_colorpicker button bg-color' data-tag="content" data-attribute="background-color"/>
 								<span class="img-uploader icon button"><input type="file" /></span>
 								<select id="select1" name="bg-position" class="ximdexInput small vertical collapsable icon bg-position button">
 									<option value="lt" selected="selected"></option>
@@ -149,7 +149,7 @@
 							</dd>
 							<dt>Text</dt>
 							<dd>
-								<input type="color" name='secundary_color' id="secundary_color" value="#006b6c" class='input_colorpicker button font-color icon'/>
+								<input type="color" name='secundary_color' data-tag="content" data-attribute="font-color" value="#006b6c" class='input_colorpicker button font-color icon'/>
 								<select id="select1" name="text-align" class="text-align ximdexInput small vertical collapsable icon button">
 									<option value="left" selected="selected"></option>
 									<option value="center"></option>
@@ -170,7 +170,7 @@
 									<option value="Jura">Jura</option>
 									<option value="Ubuntu">Ubuntu</option>
 								</select>
-								
+
 							</dd>
 						</dl>
 
@@ -186,7 +186,7 @@
 								</select></dd>
 							<dt>Background</dt>
 							<dd>
-								<input type="color" name='secundary_color' id="secundary_color" value="#006b6c" class='input_colorpicker button bg-color'/>
+								<input type="color" data-tag="footer" data-attribute="background-color"  value="#006b6c" class='input_colorpicker button bg-color'/>
 								<span class="img-uploader icon button"><input type="file" /></span>
 								<select id="select1" name="bg-position" class="ximdexInput small vertical collapsable icon bg-position button">
 									<option value="lt" selected="selected"></option>
@@ -204,7 +204,7 @@
 							</dd>
 							<dt>Text</dt>
 							<dd>
-								<input type="color" name='secundary_color' id="secundary_color" value="#006b6c" class='input_colorpicker button font-color icon'/>
+								<input type="color" name='secundary_color' id="secundary_color" value="#006b6c" class='input_colorpicker button font-color icon' data-tag="footer" data-attribute="font-color"/>
 								<select id="select1" name="text-align" class="text-align ximdexInput small vertical collapsable icon button">
 									<option value="left" selected="selected"></option>
 									<option value="center"></option>
@@ -225,19 +225,19 @@
 									<option value="Jura">Jura</option>
 									<option value="Ubuntu">Ubuntu</option>
 								</select>
-								
+
 							</dd>
 						</dl>
 
 					</div>
 
-				
+
 		<!--
-					
+
 
 								<input type="range" name="rango" id="rango" min="0" max="100" step="1"/>
 
-				
+
 					<label for="password_repeated" class="aligned">{t}Font color{/t}</label>
 					<input type="color" name='secundary_color' id="secundary_color" value="#ffffff" class='input_colorpicker'/>
 
@@ -253,18 +253,13 @@
 									<option value="Ubuntu">Ubuntu</option>
 								</select>
 
-				
+
 			</div>-->
-			
+
 			</div>
-			<div class="bsPreviewContainer" style="width:40%; float:left; clear:right; padding:10px; background-color:#006B6C">
-				<div style="min-height:20px; padding:10px; text-align:right;background-color:#ffffff" class="bsPreviewTitle">
-					<h4>Title</h4>
-				</div>
-				<div class="bsPreviewContent" style="padding:10px; color:#000000">
-					A Sample text to show the color text.
-					Use the form to change the color.
-					You will can change all of this in config node, in ximlet folder.
-				</div>
-		</div>
+
+			<div class="templatePreview" style="width:62%; float:right; position:relative">
+				<iframe id="xsparrow-preview" class="xsparrow-preview-frame" style="width:100%; position: relative; height:100%; float:right" frameborder="0" src="{$_URL_ROOT}/xmd/loadaction.php?action=createproject&mod=XSparrow&method=loadPreview" scrolling="auto">
+				</iframe>
+			</div>
 </div>

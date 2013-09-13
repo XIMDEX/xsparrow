@@ -215,7 +215,7 @@
 				if (left + 356 > viewPort.l + viewPort.w) {
 					left -= 356;
 				}
-				cal.css({left: left + 'px', top: top + 'px'});
+				cal.css({left: left + 'px', top: top + 'px',"z-index":1000});
 				if (cal.data('colorpicker').onShow.apply(this, [cal.get(0)]) != false) {
 					cal.show();
 				}
@@ -378,6 +378,8 @@
 					$newElement =$("<div/>").addClass("custom-colorpicker");
 					var classes = $(this).attr("class");
 					$newElement.addClass(classes);
+					$newElement.attr("data-tag",$(this).attr("data-tag"));
+					$newElement.attr("data-attribute",$(this).attr("data-attribute"));
 					$(this).before($newElement);
 					$(this).hide();
 				});

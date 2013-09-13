@@ -2,16 +2,16 @@
 <xsparrow-theme version="1.0" >
 
   <theme-properties>
-    <theme-shortname>ximdex</theme-shortname>
-    <theme-title>Ximdex theme</theme-title>
-    <theme-description>Portal completo con varios niveles de navegación</theme-description>
+    <theme-shortname>geuin</theme-shortname>
+    <theme-title>Geuin theme</theme-title>
+    <theme-description>Portal completo con un nivel de navegación</theme-description>
     <theme-style>bootstrap</theme-style>
   </theme-properties>
 
 
-  <main font-color="#6f6e48" background-color="#334411" background-image="" background-position="left top" background-repeat="no-repeat">
+  <main>
 
-    <header image="" font-color="" image-side="left" font-size="48px" border="Top/Bottom" border-color="#b3b282">
+    <header image="" background-color="#334411" background-image="" background-position="left top" background-repeat="no-repeat" font-color="" image-side="left" font-size="48px" border="Top/Bottom" border-color="#b3b282">
       <layout left-column-size="0" main-column-size="0" right-column-size="0"></layout>
       <header-title font-color="#a48b59" font-size="" align="left">
         Your title2!
@@ -21,7 +21,7 @@
       </header-subtitle>
       <breadcrumb background-color="" font-color="" current-font-color=""/>
     </header>
-    <container left_column="No" right_column="No" background-color="" background-image="" background-position="right top" background-repeat="no-repeat">
+    <content left_column="No" right_column="No" background-color="" background-image="" background-position="right top" background-repeat="no-repeat">
 
       <layout left-column-size="0" main-column-size="0" right-column-size="0"></layout>
       <left-column>[Left Column]</left-column>
@@ -37,7 +37,7 @@
         </link-element>[Main Column]
       </main-column>
       <right-column>[Right Column]</right-column>
-    </container>
+    </content>
     <footer background-color="" font-color="">
       <layout left-column-size="0" main-column-size="0" right-column-size="0"></layout>[Footer]
     </footer>

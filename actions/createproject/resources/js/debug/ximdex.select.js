@@ -6,9 +6,10 @@ $(function() {
       options:{
         direction:"vertical",
         collapsable: true,
-        change: null
+        onChange: function(){},
+	onHover: function(){}
       },
-
+      selectedOption: 0,
 
       // the constructor function
       _create: function() {
@@ -121,7 +122,9 @@ $(function() {
                         .text($auxOption.text());
 
         this._on($newOption,{
-          click: "select"
+          click: "select",
+	  mouseenter: "_hover",
+	  mouseleave: "_hover"	  
         });
 
 
@@ -141,6 +144,10 @@ $(function() {
         return $newOption;
       },
 
+      _hover: function(e){
+	this._trigger("onHover",e);
+      },
+
       _buildContainer: function(){
 
           $divContainer = $("<div/>")
@@ -152,8 +159,11 @@ $(function() {
       select: function(e){
         $option = $(e.currentTarget);
         var pos = $option.attr("data-option");
+	this.selectedOption = pos;
+	this.element.children().removeAttr("selected"); 
+	$(this.element.children()[pos]).attr("selected","selected");
         this._changeOptionSelected(pos);
-        this._trigger("change",e,{value:$option.val()});
+        this._trigger("onChange",e,{value:$option.val()});
         e.stopPropagation();
       },
 
@@ -179,7 +189,7 @@ $(function() {
 
 
           if (!this.options.collapsable){
-            this.xInput.siblings().removeClass("selection");
+            this.xInput.siblings().children().removeClass("selection");
             this.xOptionElements[index].element.addClass("selection");
           }
       }
