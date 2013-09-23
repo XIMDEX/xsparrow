@@ -50,7 +50,7 @@ X.actionLoaded(function (event, fn, params){
 							console.log("aaa");
 						}
 					});
-        	
+
 					fn('.custom_options h3').click(this._toggleOptions.bind(this));
 
       },
@@ -59,20 +59,22 @@ X.actionLoaded(function (event, fn, params){
 			*Set current html selected tag
 			*/
       setCurrentHtmlTag : function(tag){
-				if (tag)
+				if (tag){
 					this.$currentHtmlTag = $(tag);
-				else
+				}else{
 					this.$currentHtmlTag = false;
+				}
 			},
 
 			/**
 			*Set current xml selected tag
 			*/			
       setCurrentXmlTag: function(tag){
-				if (tag)
+				if (tag){
 					this.$currentXmlTag = $(tag);
-				else
+				}else{
 					this.$currentXmlTag = false;
+				}
       },
 
 			/**
@@ -87,16 +89,17 @@ X.actionLoaded(function (event, fn, params){
           case 2: //Tag value. There isnt attributeName
             this.$iframe.find("."+arguments[0]).text(arguments[1]);
             this.xml.find(arguments[0]).text(arguments[1]);
-	    			break;
+						break;
           case 3: //Attribute value. And its a css property
 						//Converting the ximdex attribute name to javascript style property name.
-	    			var jsStyle=X.Sparrow.stylesMap[arguments[1]];					
-	    			if (!jsStyle)
-							jsStyle = arguments[1];
+						var jsStyle=X.Sparrow.stylesMap[arguments[1]];					
+						if (!jsStyle){
+							jsStyle = arguments[1];						
+						}
 						//Setting style and xml attribute value.						
             this.$currentHtmlTag[0].style[jsStyle] = arguments[2];
             this.$currentXmlTag[0].setAttribute(arguments[1],arguments[2]);
-	    		break;
+						break;
         }
       },
       
@@ -104,16 +107,29 @@ X.actionLoaded(function (event, fn, params){
 			* Function on click on customize theme link.
 			*/		
 			_selectTheme: function(event){
+					var src = X.restUrl+"?action=createproject&mod=XSparrow&method=loadPreview";
+					src += "&theme="+$(event.currentTarget).attr("data-theme");
+
+					$("iframe").attr("src",src);			
+
           var actionWidth = fn("div.action_container").width()*-1;
           fn("div.action_content form").animate({"margin-left":actionWidth+"px"}, "slow");
           fn("div.action_content div.customize-template-form").animate({"margin-left":"0px"}, "slow");
           this.loadXml($(event.currentTarget).attr("data-theme"));
           return false;
       },
+
+			/**
+			* Slide the Header, body or footer forms at customization.
+			*/
       _toggleOptions: function(event){
-                        $(this).next().slideToggle();
-                        $(this).toggleClass('opened').toggleClass('closed');
+        $(this).next().slideToggle();
+        $(this).toggleClass('opened').toggleClass('closed');
       },
+
+			/**
+			*	Get Xml configuration for the selected theme.
+			*/
       loadXml:function(theme){
         var url = X.baseUrl+"?mod=XSparrow&action=createproject&method=getTheme";
         var that = this;
@@ -131,7 +147,10 @@ X.actionLoaded(function (event, fn, params){
       }
     });
 
+	//Creating SparrowTheme object
   var theme = new X.SparrowTheme();
+
+	//Creating ColorPicker objects
   fn("input.input_colorpicker").ColorPicker(
   {
     onShow: function(){
@@ -183,10 +202,6 @@ X.actionLoaded(function (event, fn, params){
 
 	return false;
   });
-
-
-
-
 
 
   $('.custom_options h3').click(function(){

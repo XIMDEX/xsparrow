@@ -50,7 +50,7 @@ class Theme {
 			}else{
 				$themesFolderPath = $theme;
 
-				if (substr($theme,-4)==".xml"){//if is filename with or without full path{
+				if (substr($theme,-4)==".xml"){//if is filename with or without full path
 					$themesFolderPath = substr($theme,0,-4);
 				}
 
@@ -138,9 +138,9 @@ class Theme {
 	}
 
 	/**
-	*Check if is a valid xml and parse with Relax-NG
+	*<p>Check if is a valid xml and parse with Relax-NG</p>
 	*@param $xml content to check. It could be a path. but it isnt valid.
-	*It would return false value.
+	*	It would return false value.
 	*@param $laxy. If true parse with Relax-NG
 	*@return boolean. True if is valid the xml.
 	*/
@@ -201,9 +201,9 @@ class Theme {
 
 	/******************STATIC METHODS******************/
 	/**
-	*Fet all themes in Theme folder
-	*@param $limit number of themes to get.
-	*@param $offset first theme to get
+	*Get all themes in Theme folder
+	*<p>@param $limit number of themes to get.</p>
+	*<p>@param $offset first theme to get</p>z
 	*/
 	public static function getAllThemes($limit=null, $offset=null){
 
@@ -214,33 +214,33 @@ class Theme {
 		}
 
 		//Root theme folder
-		$templateRootFolder = Config::GetValue("AppRoot").MODULE_XSPARROW_PATH.THEMES_FOLDER;
+		$themesRootFolder = Config::GetValue("AppRoot").MODULE_XSPARROW_PATH.THEMES_FOLDER;
 		//Getting all theme folders
-		$templateFolders = FsUtils::readFolder($templateRootFolder,false);
+		$themesFolders = FsUtils::readFolder($themesRootFolder,false);
 		$excluded = array();
 
-		foreach ($templateFolders as $templateFolder ) {
+		foreach ($themesFolders as $themeFolder ) {
 
-			if (!is_dir($templateRootFolder."/".$templateFolder)){
-				$excluded[] = $templateFolder;
+			if (!is_dir($templateRootFolder."/".$themeFolder)){
+				$excluded[] = $themeFolder;
 			}
 		}
 
-		$templateFolders = array_values(array_diff($templateFolders, $excluded));
+		$themesFolders = array_values(array_diff($themesFolders, $excluded));
 		$i = $offset;
 		$numFound = 0;
-		$numTemplateFolders = count($templateFolders);
+		$numThemesFolders = count($themesFolders);
 
-		while($i < $numTemplateFolders){
+		while($i < $numThemesFolders){
 
 			if ($limit && is_int($limit) && $limit <= $numFound){
 				break;
 			}
 
-			$template = $templateFolders[$i];
+			$themeName = $themesFolders[$i];
 
-			if (is_dir($templateRootFolder."/".$template)){
-				$fileXml = "$templateRootFolder/$template/$template.xml";
+			if (is_dir($templateRootFolder."/".$themeName)){
+				$fileXml = "$templateRootFolder/$themeName/$themeName.xml";
 
 				if (file_exists($fileXml)){
 					$content = FsUtils::file_get_contents($fileXml);

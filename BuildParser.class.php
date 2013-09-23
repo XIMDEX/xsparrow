@@ -40,7 +40,7 @@ class BuildParser {
 	*/
 	public function __construct($schemaVersion, $themeStyle=null){
 
-		$patternBuildFilePath = Config::GetValue("AppRoot").MODULE_XSPARROW_PATH.PROJECTS_FOLDER."/$schemaVersion/%s/".PROJECT_CONFIG_FILENAME;
+		$patternProjectPath = Config::GetValue("AppRoot").MODULE_XSPARROW_PATH.PROJECTS_FOLDER."/$schemaVersion/%s/";
 		$isDefault = false;
 
 		if (!$themeStyle || (strtolower($themeStyle) === strtolower(DEFAULT_PROJECT))){
@@ -48,8 +48,10 @@ class BuildParser {
 			$themeStyle = DEFAULT_PROJECT;
 		}
 
-		$buildFilePath = sprintf($patternBuildFilePath,$themeStyle);
-		$defaultBuildFilePath = sprintf($patternBuildFilePath,DEFAULT_PROJECT);
+		$buildFilePath = sprintf($patternProjectPath,$themeStyle).PROJECT_CONFIG_FILENAME;
+		$defaultBuildFilePath = sprintf($patternProjectPath,DEFAULT_PROJECT).PROJECT_CONFIG_FILENAME;
+
+		$this->filePath = $buildFilePath;
 
 		/*If build file not exists in projects folder for this version and theme
 		style, write message*/
@@ -214,14 +216,13 @@ class Loader_Project extends Loader_AbstractNode {
 		$extension = $type == 'XSL' ? 'xsl': 'xml';
 		$nodetypename = $type == 'XSL' ? 'XSLTEMPLATE': 'TEMPLATE';
 
-
 		$path = $this->getPath() . '/templates';
-                $files = FsUtils::readFolder($path, false);
+	    $files = FsUtils::readFolder($path, false);	    
 		$ret = array();
 		foreach ($files as $file) {
-                        if (preg_match(sprintf('/\.%s$/', $extension), $file)) {
+            if (preg_match(sprintf('/\.%s$/', $extension), $file)) {
 				$ret[] = new Loader_XimFile($nodetypename, "$path/$file");
-                        }
+            }
 		}
 		return $ret;
 	}

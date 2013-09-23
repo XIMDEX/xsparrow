@@ -20,9 +20,9 @@
       </header-subtitle>
       <breadcrumb background-color="" font-color="" current-font-color=""/>
     </header>
-    <content left_column="No" right_column="No" background-color="" background-image="" background-position="right top" background-repeat="no-repeat">
 
-      <layout left-column-size="0" main-column-size="0" right-column-size="0"></layout>
+    <content left_column="No" right_column="No" background-color="" background-image="" background-position="right top" background-repeat="no-repeat">
+			<layout left-column-size="0" main-column-size="0" right-column-size="0"></layout>
       <left-column>[Left Column]</left-column>
       <main-column>
         <title-element font-color="#c7b58e" font-size="" border-bottom="none" border-size="0px">

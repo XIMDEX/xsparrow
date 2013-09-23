@@ -1,5 +1,4 @@
 <?php
-
 /**
  *  \details &copy; 2011  Open Ximdex Evolution SL [http://www.ximdex.org]
  *
@@ -669,6 +668,10 @@ class Action_createproject extends ActionAbstract {
 
     }
 
+
+		/**
+		*<p>Load the iframe with the Default preview for the selected theme</p>
+		*/
     public function loadPreview(){
 
         $values = array();

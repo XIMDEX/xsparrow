@@ -28,6 +28,8 @@
 
 
 ModulesManager::file('/inc/modules/Module.class.php');
+ModulesManager::file('/modules/XSparrow/conf/xsparrow.conf');
+ModulesManager::file('/modules/XSparrow/inc/XSparrowProject.class.php');
 
 class Module_XSparrow extends Module {
 
@@ -43,18 +45,38 @@ class Module_XSparrow extends Module {
 
 	function install() {
 
-        // Install logic.
+    // Install logic.
 
-        // get module from ftp, webdav, subversion, etc...?
-        // need to be extracted?
-        // extract and copy files to modules location.
+    // get module from ftp, webdav, subversion, etc...?
+    // need to be extracted?
+    // extract and copy files to modules location.
 
-        // get constructor SQL
+    // get constructor SQL
 		$this->loadConstructorSQL("XSparrow.constructor.sql");
 
-        // Install !
+		//Create a temp file for the templates of every projects
+		//It will ease the theme previews.
+		$this->buildTempXslForThemes();	
+
+
+    // Install !
 		$install_ret = parent::install();
 
+	}
+
+
+	/**
+	*<p>For every project build a xsl file in tmp/Xsparrow/ 
+	*   with all the xsl definitions</p>
+	*/
+	private function buildTempXslForThemes(){
+		$arrayVersionProjects = XSparrowProject::getAllXSparrowProjects();
+		foreach ($arrayVersionProjects as $version => $arrayProjects) {
+			foreach ($arrayProjects as $projectName => $project) {
+				$project->buildCompressFile();
+				echo "Creando fichero XSL temporal para $projectName Version $version\r\n";				
+			}
+		}
 	}
 
 	function uninstall() {
