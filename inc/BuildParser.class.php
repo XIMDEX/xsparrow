@@ -242,11 +242,12 @@ class Loader_Section extends Loader_AbstractNode {
 		return $ret;
 	}
 
-	public function getCommon($extra_path="") {
-                $path = $this->getPath() . '/common'.$extra_path;
+	public function getCommon() {
+        $path = $this->getPath() . '/common'.$extra_path;
 		$files = FsUtils::readFolder($path, false);
 		$ret = array();
 		foreach ($files as $file) {
+			error_log("Common: $path/$file");
 			$ret[] = new Loader_XimFile('TextFile', "$path/$file");
 		}
 		return $ret;

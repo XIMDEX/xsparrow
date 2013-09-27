@@ -59,6 +59,7 @@ class Module_XSparrow extends Module {
 		$this->buildTempXslForThemes();	
 
 
+
     // Install !
 		$install_ret = parent::install();
 
@@ -66,8 +67,7 @@ class Module_XSparrow extends Module {
 
 
 	/**
-	*<p>For every project build a xsl file in tmp/Xsparrow/ 
-	*   with all the xsl definitions</p>
+	*For every project build a xsl file in tmp/Xsparrow/ with all the xsl definitions
 	*/
 	private function buildTempXslForThemes(){
 		$arrayVersionProjects = XSparrowProject::getAllXSparrowProjects();
@@ -75,6 +75,7 @@ class Module_XSparrow extends Module {
 			foreach ($arrayProjects as $projectName => $project) {
 				$project->buildCompressFile();
 				echo "Creando fichero XSL temporal para $projectName Version $version\r\n";				
+				$project->buildTempResources();
 			}
 		}
 	}

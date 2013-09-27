@@ -32,19 +32,23 @@ ModulesManager::file(MODULE_XSPARROW_PATH . '/BuildParser.class.php');
 ModulesManager::file('/inc/helper/DebugLog.class.php');
 ModulesManager::file('/actions/addximlet/Action_addximlet.class.php');
 ModulesManager::file(MODULE_XSPARROW_PATH . '/inc/Theme.class.php');
+ModulesManager::file(MODULE_XSPARROW_PATH . '/XSparrowProject.class.php');
 
+/**
+ * Create a project using XSparrow wizard
+ */
 class Action_createproject extends ActionAbstract {
 
     private $project = null;
     public $name ="XSparrow";
 
     /**
-     *<p>Main function, first step in the creation project process</p>
-     **/
+     *Main function, first step in the creation project process
+     */
     public function index() {
 
         $themes = Theme::getAllThemes();
-        error_log($themes);
+        error_log(print_r($themes,1));
         $arrayTheme = array();
         foreach ($themes as $theme ) {
             $themeDescription["name"] = $theme->_shortname;
@@ -103,17 +107,7 @@ class Action_createproject extends ActionAbstract {
         $nodeType = new NodeType();
         $nodeType->SetByName($nodeTypeName);
 
-        $b = new BuildParser($schemaVersion,$styleTheme);
-        $defaultParser = new BuildParser($schemaVersion);
-
-        $this->project = $b->getProject();
-
-        if ($styleTheme == DEFAULT_PROJECT){
-            $this->defaultProject = $this->project;
-        }else{
-            $this->defaultProject = $defaultParser->getProject();
-        }
-
+        $xsparrowProject = new XSparrowProject($styleTheme,$schemaVersion);
 
         //Creating project
         $data = array(
@@ -131,7 +125,7 @@ class Action_createproject extends ActionAbstract {
 
 
         $project = new Node($projectId);
-        $this->project->projectid = $projectId;
+        $xsparrowProject->setProjectId($projectId);
 
         $this->setAdvancedSettings($project);
 
@@ -139,9 +133,9 @@ class Action_createproject extends ActionAbstract {
 
         //Get Servers, Schemes and Templates under project node.
         //Defaults and overloading.
-        $servers = $this->getServers();
-        $schemes = $this->getSchemes();
-        $templates = $this->getTemplates();
+        $servers = $xsparrowProject->getServers();
+        $schemes = $xsparrowProject->getSchemes();
+        $templates = $xsparrowProject->getTemplates();
 
         foreach($schemes as $scheme){
             $this->insertFiles($this->project->projectid, "schemes", array($scheme));
@@ -155,97 +149,10 @@ class Action_createproject extends ActionAbstract {
             $this->insertServer($server);
         }
 
-
         $template = "success";
 
         $values = array();
         $this->render($values, $template, 'default-3.0.tpl');
-    }
-
-
-    /**
-    *<p>Get the match Servers from default and specific project</p>
-    *<p>Defaults are mandatory, but specific can overload it.</p>
-    * @return array with all Loader_Server objects.
-    */
-    private function getServers(){
-
-        $result = array();
-        $servers = $this->project->getServers();
-        if ($this->defaultProject && ($this->defaultProject !== $this->project)){
-            $defaultServers = $this->defaultProject->getServers();
-        }
-
-        foreach ($defaultServers as $server) {
-            if ($server->__get("name")){
-                $result[$server->__get("name")] = $server;
-            }
-        }
-
-        foreach ($servers as $server) {
-            if ($server->__get("name")){
-                $result[$server->__get("name")] = $server;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-    *<p>Get the match Schemes from default and specific project</p>
-    *<p>Defaults are mandatory, but specific can overload it.</p>
-    * @return array with all Loader_XimFile objects.
-    */
-    private function getSchemes(){
-        $result = array();
-
-        $schemes = $this->project->getServers();
-        if ($this->defaultProject && ($this->defaultProject !== $this->project)){
-            $defaultSchemes = $this->defaultProject->getSchemes();
-        }
-
-        foreach ($defaultSchemes as $scheme){
-            if ($scheme->__get("filename")){
-                $result[$scheme->__get("filename")] = $scheme;
-            }
-        }
-
-        foreach ($schemes as $scheme){
-            if ($scheme->__get("filename")){
-                $result[$scheme->__get("filename")] = $scheme;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-    *<p>Get the match Templates from default and specific project</p>
-    *<p>Defaults are mandatory, but specific can overload it.</p>
-    * @return array with all Loader_XimFile objects.
-    */
-    private function getTemplates(){
-
-        $result = array();
-
-        $templates = $this->project->getTemplates();
-        if ($this->defaultProject && ($this->defaultProject !== $this->project)){
-            $defaultTemplates = $this->defaultProject->getTemplates();
-        }
-
-        foreach ($defaultTemplates as $template){
-            if ($template->__get("filename")){
-                $result[$template->__get("filename")] = $template;
-            }
-        }
-
-        foreach ($template as $template){
-            if ($template->__get("filename")){
-                $result[$template->__get("filename")] = $template;
-            }
-        }
-
-        return $result;
     }
 
 
@@ -332,8 +239,6 @@ class Action_createproject extends ActionAbstract {
 
         $nodeServer->class->AddChannel($physicalServerId, $this->project->channel);
         Module::log(Module::SUCCESS, "Server creation O.K.");
-
-
 
 
         // common
@@ -669,9 +574,9 @@ class Action_createproject extends ActionAbstract {
     }
 
 
-		/**
-		*<p>Load the iframe with the Default preview for the selected theme</p>
-		*/
+	/**
+	*Load the iframe with the Default preview for the selected theme
+	*/
     public function loadPreview(){
 
         $values = array();

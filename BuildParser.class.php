@@ -26,15 +26,32 @@
 
 ModulesManager::file('/inc/fsutils/FsUtils.class.php');
 
+/**
+ * Parser for a project under a specific path.
+ * 
+ * The path is defined in a xml file
+ */
 class BuildParser {
 
+	/**
+	 * Full path to config file
+	 * @var string
+	 */
 	private $filePath = null;
+	/**
+	 * Xml object for the config file
+	 * @var DomDocument
+	 */
 	private $doc = null;
+	/**
+	 * XPath object for the config file
+	 * @var XPath
+	 */
 	private $xpath = null;
-	private $defaultBuildParser = null;
+
 
 	/**
-	*<p>Constructor load project from schema and theme style. It could be the default one.</p>
+	*Constructor. Load project from schema and theme style. It could be the default one.
 	*@param $schemaVersion. it indicates the folder where find the project files
 	*@param $themeStyle (òptional). It could be Bootstrap, default or whatever
 	*/
@@ -264,27 +281,40 @@ class Loader_Section extends Loader_AbstractNode {
 		return $ret;
 	}
 
-	public function getCommon($extra_path="") {
-                $path = $this->getPath() . '/common'.$extra_path;
+	
+	public function getCommon($recursiveFolderName="") {
+		$path = $this->getPath() . '/common'.$recursiveFolderName;
 		$files = FsUtils::readFolder($path, false);
-		$ret = array();
-		foreach ($files as $file) {
-			$ret[] = new Loader_XimFile('TextFile', "$path/$file");
+		$recursiveRet = $ret = array();
+		if ($files){
+			foreach ($files as $file) {
+				if (is_dir("$path/$file")){
+					$recursiveFolderName.="/$file";
+					$recursiveRet = $this->getCommon($recursiveFolderName);
+				}else{
+					$ret["$recursiveFolderName/$file"] = new Loader_XimFile('TextFile', "$path/$file");
+				}
+			}
 		}
-		return $ret;
+		return array_merge($recursiveRet,$ret);
 	}
 
-	public function getImages($extra_path="") {
-		$path = $this->getPath() . '/images'.$extra_path;
+	public function getImages($recursiveFolderName="") {
+		$path = $this->getPath() . "/images$recursiveFolderName";		
 		$files = FsUtils::readFolder($path, false);
-		$ret = array();
-		foreach ($files as $file) {
-            if (!is_dir($file)){
-                $ret[] = new Loader_XimFile('IMAGEFILE', "$path/$file");
-
-            }
+		$recursiveRet = $ret = array();
+		if ($files){
+			foreach ($files as $file) {
+				if (is_dir("$path/$file")){
+					$recursiveFolderName .= "/$file";
+					$recursiveRet = $this->getImages($recursiveFolderName);				
+				}else{
+	                $ret["$recursiveFolderName/$file"] = new Loader_XimFile('IMAGEFILE', "$path/$file");
+	                
+	            }
+			}	
 		}
-		return $ret;
+		return array_merge($recursiveRet,$ret);
 	}
 
 	public function getXimclude() {
@@ -357,15 +387,22 @@ class Loader_Server extends Loader_Section {
 		return $ret;
 	}
 
-	public function getCSS($extra_path="") {
-		$path = $this->getPath() . '/css'.$extra_path;
+	public function getCSS($recursiveFolderName="") {
+		$path = $this->getPath() . "/css$recursiveFolderName";
 		$files = FsUtils::readFolder($path, false);
-		$ret = array();
-		foreach ($files as $file) {
-                        $ret[] = new Loader_XimFile('CSSFILE', "$path/$file");
-
+		$recursiveRet = $ret = array();
+		if ($files){
+			foreach ($files as $file) {			
+				if (is_dir("$path/$file")){
+					$recursiveFolderName.="/$file";
+					$recursiveRet = $this->getCss($recursiveFolderName);
+				}else{
+					$ret["$recursiveFolderName/$file"] = new Loader_XimFile('CSSFILE', "$path/$file");
+				}
+			}			
 		}
-                return $ret;
+		
+    	return array_merge($recursiveRet,$ret);
 	}
 }
 

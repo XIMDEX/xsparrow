@@ -30,16 +30,30 @@ ModulesManager::file('/inc/fsutils/FsUtils.class.php');
 ModulesManager::file('/inc/xml/validator/XMLValidator.class.php');
 ModulesManager::file('/inc/xml/validator/XMLValidator_RNG.class.php');
 
+/**
+ * Manage a XSparrow theme. 
+ * 
+ * A theme is based on a project.
+ */
 class Theme {
 
+	/**
+	 * Xml content for the config file in the theme
+	 * @var String
+	 */
 	public $xml;
+	/**
+	 * XSparrow Project Version. it has float format.
+	 * @var String
+	 */
 	public $version;
 
 	/**
-	*Class Constructor
-	*@param $theme. It could be the id of DB table, content xml, relative path or full path to xml.
+	*Constructor
+	*
+	*@param Object $theme. It could be the id of DB table, content xml, relative path or full path to xml.
 	*/
-	public function Theme($theme){
+	public function __construct($theme){
 
 		$xml = false;
 		if (is_string($theme)){
@@ -73,6 +87,7 @@ class Theme {
 
 	/**
 	* Indicate if this theme object is a valid one.
+	* @return boolean True if exists 
 	*/
 	public function isValid(){
 
@@ -82,8 +97,8 @@ class Theme {
 	}
 
 	/**
-	*Get a xml from path
-	*@param $themeFolderName. Path to theme folder
+	*Get a xml content from path
+	*@param string $themeFolderName. Path to theme folder
 	*@return xml content
 	*/
 	private function getXmlFromFolderName($themesFolderPath){
@@ -138,10 +153,10 @@ class Theme {
 	}
 
 	/**
-	*<p>Check if is a valid xml and parse with Relax-NG</p>
-	*@param $xml content to check. It could be a path. but it isnt valid.
-	*	It would return false value.
-	*@param $laxy. If true parse with Relax-NG
+	*Check if is a valid xml and parse with Relax-NG
+	*@param String $xml content to check. It could be a path. but it isnt valid.
+	*It would return false value.
+	*@param boolean $laxy. If true parse with Relax-NG
 	*@return boolean. True if is valid the xml.
 	*/
 	private function isValidXml($xml, $lazy = false){
@@ -202,8 +217,8 @@ class Theme {
 	/******************STATIC METHODS******************/
 	/**
 	*Get all themes in Theme folder
-	*<p>@param $limit number of themes to get.</p>
-	*<p>@param $offset first theme to get</p>z
+	*@param int $limit number of themes to get.
+	*@param int $offset first theme to get</p>z
 	*/
 	public static function getAllThemes($limit=null, $offset=null){
 
@@ -221,7 +236,7 @@ class Theme {
 
 		foreach ($themesFolders as $themeFolder ) {
 
-			if (!is_dir($templateRootFolder."/".$themeFolder)){
+			if (!is_dir($themesRootFolder."/".$themeFolder)){
 				$excluded[] = $themeFolder;
 			}
 		}
@@ -239,8 +254,8 @@ class Theme {
 
 			$themeName = $themesFolders[$i];
 
-			if (is_dir($templateRootFolder."/".$themeName)){
-				$fileXml = "$templateRootFolder/$themeName/$themeName.xml";
+			if (is_dir($themesRootFolder."/".$themeName)){
+				$fileXml = "$themesRootFolder/$themeName/$themeName.xml";
 
 				if (file_exists($fileXml)){
 					$content = FsUtils::file_get_contents($fileXml);
