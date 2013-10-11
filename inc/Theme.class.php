@@ -29,6 +29,7 @@ ModulesManager::file('/conf/xsparrow.conf', 'XSparrow');
 ModulesManager::file('/inc/fsutils/FsUtils.class.php');
 ModulesManager::file('/inc/xml/validator/XMLValidator.class.php');
 ModulesManager::file('/inc/xml/validator/XMLValidator_RNG.class.php');
+ModulesManager::file('/modules/XSparrow/inc/XSparrowProject.class.php');
 
 /**
  * Manage a XSparrow theme. 
@@ -47,6 +48,9 @@ class Theme {
 	 * @var String
 	 */
 	public $version;
+
+	private $projectName;
+	public $project=false;
 
 	/**
 	*Constructor
@@ -82,6 +86,7 @@ class Theme {
 			XMD_Log::warning(LOG_PREFIX."Unable to load $theme theme.");
 		}else if ($xml){
 			$this->getThemeProperties();
+			$this->project = new XSparrowProject($this->projectName,$this->version);
 		}
 	}
 
@@ -94,6 +99,43 @@ class Theme {
 		if ($this->xml)
 			return true;
 		return false;
+	}
+
+	/**
+	 * 
+	 */
+	public function buildTempResources(){		
+		$this->project->buildTempResources($this->_shortname);
+
+		$sourceFolder = Config::GetValue("AppRoot").MODULE_XSPARROW_PATH.THEMES_FOLDER."/{$this->_shortname}";
+		$tmpFolder = Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$this->_shortname}";
+		if (!is_dir($tmpFolder."/images")){
+            if (!mkdir($tmpFolder."/images",0777,true)){
+			
+            }
+
+        }
+        
+        $arrayImages = FsUtils::readFolder("$sourceFolder/images");
+        if ($arrayImages){
+        	foreach ($arrayImages as $image) {
+        		copy("$sourceFolder/images/$image", "$tmpFolder/images/$image");
+        	}	
+        }
+        
+
+        if (!is_dir($tmpFolder."/css")){
+            if (!mkdir($tmpFolder."/css",0777,true)){
+				                
+            }
+        }
+
+        $arrayCss = FsUtils::readFolder("$sourceFolder/css");
+        if ($arrayCss){
+       		foreach ($arrayImages as $image) {
+        		copy("$sourceFolder/css/$image", "$tmpFolder/css/$image");
+        	}	
+        }
 	}
 
 	/**
@@ -117,6 +159,8 @@ class Theme {
 		}
 		return $result;
 	}
+
+
 
 	/**
 	*Get all attributes from xml content.
@@ -192,6 +236,7 @@ class Theme {
 		}
 
 		$this->version = $xsparrowThemeNode->getAttribute("version");
+		$this->projectName = $xsparrowThemeNode->hasAttribute("project")? $xsparrowThemeNode->getAttribute("project") : DEFAULT_PROJECT;
 		$rngFilePath = Config::GetValue("AppRoot").MODULE_XSPARROW_PATH.SCHEMES_FOLDER."/".SCHEME_BASENAME.$this->version.".xml";
 
 		//if doesnt exist rng file.
@@ -214,11 +259,13 @@ class Theme {
 		return $result;
 	}
 
+
+
 	/******************STATIC METHODS******************/
 	/**
 	*Get all themes in Theme folder
 	*@param int $limit number of themes to get.
-	*@param int $offset first theme to get</p>z
+	*@param int $offset first theme to get
 	*/
 	public static function getAllThemes($limit=null, $offset=null){
 

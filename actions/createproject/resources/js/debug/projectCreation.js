@@ -4,6 +4,7 @@ var projectCreation = (function(){
 	var project={};
 	var name="";
 	var formInputs = {};
+	var xml = "";
 
 	//Load project
 	arraySteps.push({
@@ -73,9 +74,10 @@ var projectCreation = (function(){
 
 
 
-	var _initialize = function(fun){
+	var _initialize = function(fun, xml){
 
 		fn = fun;
+		this.xml = xml;
 		indexCalling=0;
 		name = $("#name").val();
 		formInputs.title = $("#title").val();
@@ -143,9 +145,9 @@ var projectCreation = (function(){
 
 	return {
 
-		createProject: function(fn){
+		createProject: function(fn, xml){
 
-			_initialize(fn);
+			_initialize(fn, xml);
 			cleanStepsMessages();
 			createStepsMessages();
 			callNextStep();

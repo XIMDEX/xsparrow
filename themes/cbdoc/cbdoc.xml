@@ -1,11 +1,10 @@
 <?xml version="1.0" ?>
-<xsparrow-theme version="1.0" >
+<xsparrow-theme version="1.0" project="bootstrap">
 
   <theme-properties>
     <theme-shortname>cbdoc</theme-shortname>
     <theme-title>CBDoc theme</theme-title>
-    <theme-description>Single page with scroll</theme-description>
-    <theme-style>bootstrap</theme-style>
+    <theme-description>Single page with scroll</theme-description>    
   </theme-properties>
 
 

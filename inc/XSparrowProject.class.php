@@ -27,7 +27,7 @@
 ModulesManager::file('/modules/XSparrow/BuildParser.class.php');
 
 /**
- * Manage the projects for XSparrow
+ * Manage the XSparrow projects. 
  */
 class XSparrowProject{
 
@@ -125,26 +125,28 @@ class XSparrowProject{
 	* Build temp resources from the current project.
     * @return void
 	*/
-	public function buildTempResources(){
+	public function buildTempResources($themeFolder){
 
 		//Build parser for default and current project
 		$servers = $this->getServers();
-        error_log("Proyecto $this->name");
 		foreach ($servers as $server) {
+
 			$commons = $server->getCommon();
-            $this->buildTempFiles($commons, "common");
+            $this->buildTempFiles($commons, "common", $themeFolder);
 			
             $css = $server->getCSS();
-            $this->buildTempFiles($css, "css");
+            $this->buildTempFiles($css, "css", $themeFolder);
 			
             $images = $server->getImages();
-            $this->buildTempFiles($images, "images");
+            $this->buildTempFiles($images, "images", $themeFolder);
+
+            
 		}
 	}
 
-    public function buildTempFiles($arrayFiles, $folderName){
+    public function buildTempFiles($arrayFiles, $folderName, $themeFolder){
 
-        $tmpFolder = Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$this->version}/{$this->name}/{$folderName}";
+        $tmpFolder = Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$themeFolder}/{$folderName}";
         foreach ($arrayFiles as $path => $fileObject) {
             $content = $fileObject->getContent();
             //$path = substr($path, 0, stripos("/", $path));
@@ -157,7 +159,7 @@ class XSparrowProject{
                     
                 }
             }
-            FsUtils::file_put_contents("$fullFolderPath/$fileName", $content);    
+            FsUtils::file_put_contents("$fullFolderPath/$fileName", $content);  
         }
     }
 
@@ -196,7 +198,7 @@ class XSparrowProject{
     * Defaults are mandatory, but specific can overload it.
     * @return array with all Loader_Server objects.
     */
-    private function getServers(){
+    public function getServers(){
 
         $result = array();
         $servers = $this->project->getServers();
@@ -225,7 +227,7 @@ class XSparrowProject{
     *Defaults are mandatory, but specific can overload it.
     *@return array with all Loader_XimFile objects.
     */
-    private function getSchemes(){
+    public function getSchemes(){
         $result = array();
 
         $schemes = $this->project->getServers();

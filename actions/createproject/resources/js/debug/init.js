@@ -3,12 +3,12 @@ X.actionLoaded(function (event, fn, params){
 		//Define X.Sparrow object and its property stylesMap
 		//stylesMap maps the attribute from the xml to native Javascript style
     X.Sparrow = {
-									stylesMap:{
-										"font-color":"color",
-										"background-color": "backgroundColor",
-										"align": "textAlign"
-									}
-								};
+					stylesMap:{
+						"font-color":"color",
+						"background-color": "backgroundColor",
+						"align": "textAlign"
+					}
+				};
 
 		
 		//Object for customize and create a ximdex project
@@ -77,75 +77,81 @@ X.actionLoaded(function (event, fn, params){
 				}
       },
 
-			/**
-				*Update xml and html document.
-				*This function can received an undefined number of paremeters.
-				*2 parameters means tagName and value.
-				*3 parameters means tagName, attributeName and value.
-			*/
-      setXml: function(){
+		/**
+			*Update xml and html document.
+			*This function can received an undefined number of paremeters.
+			*2 parameters means tagName and value.
+			*3 parameters means tagName, attributeName and value.
+		*/
+      	setXml: function(){
 				
-        switch (arguments.length){
-          case 2: //Tag value. There isnt attributeName
-            this.$iframe.find("."+arguments[0]).text(arguments[1]);
-            this.xml.find(arguments[0]).text(arguments[1]);
-						break;
-          case 3: //Attribute value. And its a css property
-						//Converting the ximdex attribute name to javascript style property name.
-						var jsStyle=X.Sparrow.stylesMap[arguments[1]];					
-						if (!jsStyle){
-							jsStyle = arguments[1];						
-						}
-						//Setting style and xml attribute value.						
-            this.$currentHtmlTag[0].style[jsStyle] = arguments[2];
-            this.$currentXmlTag[0].setAttribute(arguments[1],arguments[2]);
-						break;
-        }
+        	switch (arguments.length){
+          		case 2: //Tag value. There isnt attributeName
+		            this.$iframe.find("."+arguments[0]).text(arguments[1]);
+		            this.xml.find(arguments[0]).text(arguments[1]);
+					break;
+          		case 3: //Attribute value. And its a css property
+					//Converting the ximdex attribute name to javascript style property name.
+					var jsStyle=X.Sparrow.stylesMap[arguments[1]];					
+					if (!jsStyle){
+						jsStyle = arguments[1];						
+					}
+					//Setting style and xml attribute value.						
+		            this.$currentHtmlTag[0].style[jsStyle] = arguments[2];
+		            this.$currentXmlTag[0].setAttribute(arguments[1],arguments[2]);
+					break;
+        	}
+
+        	fn("input[name='xml']").val(this.xml.documentElement.outerHTML) ;
       },
       
 			/**
 			* Function on click on customize theme link.
 			*/		
 			_selectTheme: function(event){
-					var src = X.restUrl+"?action=createproject&mod=XSparrow&method=loadPreview";
-					src += "&theme="+$(event.currentTarget).attr("data-theme");
 
-					$("iframe").attr("src",src);			
+			    var themeName = $(event.currentTarget).attr("data-theme");
+				var src = X.restUrl+"?action=createproject&mod=XSparrow&method=loadPreview";
+				src += "&theme="+themeName;
+				$("iframe").attr("src",src);			
 
-          var actionWidth = fn("div.action_container").width()*-1;
-          fn("div.action_content form").animate({"margin-left":actionWidth+"px"}, "slow");
-          fn("div.action_content div.customize-template-form").animate({"margin-left":"0px"}, "slow");
-          this.loadXml($(event.currentTarget).attr("data-theme"));
-          return false;
-      },
+		        var actionWidth = fn("div.action_container").width()*-1;
+				fn("input[name='theme']").val(themeName);
+				//fn("form").animate({"margin-left":actionWidth+"px"}, "slow");
+				//fn("div.action_content div.customize-template-form").animate({"margin-left":"0px"}, "slow");
+				this.loadXml(themeName);
+				
+				return false;
+	      	},
 
-			/**
-			* Slide the Header, body or footer forms at customization.
-			*/
-      _toggleOptions: function(event){
-        $(this).next().slideToggle();
-        $(this).toggleClass('opened').toggleClass('closed');
-      },
+		/**
+		* Slide the Header, body or footer forms at customization.
+		*/
+	    _toggleOptions: function(event){
+	        $(this).next().slideToggle();
+	        $(this).toggleClass('opened').toggleClass('closed');
+     	},
 
 			/**
 			*	Get Xml configuration for the selected theme.
 			*/
-      loadXml:function(theme){
-        var url = X.baseUrl+"?mod=XSparrow&action=createproject&method=getTheme";
-        var that = this;
-        $.ajax({
-          url:url,
-          data:{theme:theme},
-          dataType: "xml",
-          success: function(data){
-              that.xml = data;
-          },
-          error: function(data){
+      	loadXml:function(theme){
+	        var url = X.baseUrl+"/?mod=XSparrow&action=createproject&method=getTheme";
+	        var that = this;
+	        $.ajax({
+	          url:url,
+	          data:{theme:theme},
+	          dataType: "xml",
+	          success: function(data){
+	              that.xml = data;
+	              fn("input[name='xml']").val(data.documentElement.outerHTML) ;
+	          },
+	          error: function(data){
 
-          }
-        });
-      }
-    });
+	          }
+	        });
+	      }
+	    });
 
 	//Creating SparrowTheme object
   var theme = new X.SparrowTheme();
@@ -195,7 +201,7 @@ X.actionLoaded(function (event, fn, params){
 
   var btn = fn('.submit-button').get(0);
   $(btn).click(function(event, button){
-      projectCreation.createProject(fn);
+  	        
   });
 
   fn("li.theme div.actions a.select").click(function(){

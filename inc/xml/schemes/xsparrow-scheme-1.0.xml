@@ -3,6 +3,7 @@
 	<start>
 		<element name="xsparrow-theme">
 			<attribute name="version"/>
+			<optional><attribute name="project"/></optional>
 			<ref name="theme-properties.class"/>
 			<ref name="main.class"/>
 		</element>

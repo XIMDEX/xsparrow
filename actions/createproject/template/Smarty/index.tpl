@@ -22,28 +22,30 @@
  *  @author Ximdex DevTeam <dev@ximdex.com>
  *  @version $Revision$
  *}
-       <div class="action_header">
-       	<h2 class="action">{t}Create project{/t}</h2>
-       	<fieldset class="buttons-form">
+ <form method="post" id="mu_action" action="{$action_url}" enctype="multipart/form-data">
+<div class="action_header">
+   	<h2 class="action">{t}Create project{/t}</h2>
+   	<fieldset class="buttons-form">
 		<!--{button type="reset" label='Reset' class='btn' }-->
 		{button label="Create project" class='validate btn main_action' }
 	</fieldset>
-       </div>
+</div>
 <div class="action_content">
-	<form method="post" id="mu_action" action="{$action_url}">
+	
 		<label for="name" class="">{t}Name{/t}</label>
-					<input type="text" name="name" id="name" value="{$name}" class='cajaxg validable not_empty long'/>
-			<a href="#" class="advanced-btn">Advanced settings</a>
-			<div class="advanced-settings">{t}Publication channels{/t}
-					{foreach from=$channels key=index item=channelData }
-					        <span>
-					          <input type="checkbox" class="validable canales check_group__canales"
-										name="channels_listed[{$channelData.id}]" id="p_{$channelData.id}" />
-					         <label for="p_{$channelData.id}" class="inline nofloat">{$channelData.name}</label> </span>
-					        <!--	<img class="xim-treeview-icon icon-channel"/> The path has been deleted and the icon just is show by CSS, src="{$_URL_ROOT}/xmd/images/icons/channel.png" -->
-					        {foreachelse}
-					        <p class="message_warning">{t}There are no channels created in the system{/t}</p>
-					        {/foreach}</div>
+		<input type="text" name="name" id="name" value="{$name}" class='cajaxg validable not_empty long'/>
+		<a href="#" class="advanced-btn">Advanced settings</a>
+		<div class="advanced-settings">{t}Publication channels{/t}
+			{foreach from=$channels key=index item=channelData }
+		        <span>
+		          	<input type="checkbox" class="validable canales check_group__canales"
+								name="channels_listed[{$channelData.id}]" id="p_{$channelData.id}" />
+			         <label for="p_{$channelData.id}" class="inline nofloat">{$channelData.name}</label> 	
+		        </span>
+			        
+			        
+			        <p class="message_warning">{t}There are no channels created in the system{/t}</p>
+			        {/foreach}</div>
 
 
 			<label for="theme">{t}Theme{/t}</label>
@@ -60,7 +62,7 @@
 				{/foreach}
 			</ul>
 
-	</form>
+	
 
 	        <div class="customize-template-form">
 			<div class="custom_options">
@@ -262,4 +264,8 @@
 				<iframe id="xsparrow-preview" class="xsparrow-preview-frame" style="width:100%; position: relative; height:100%; float:right" frameborder="0" src="{$_URL_ROOT}/xmd/loadaction.php?action=createproject&mod=XSparrow&method=loadPreview" scrolling="auto">
 				</iframe>
 			</div>
+			<input type="hidden" name="theme" value="" class="theme"/>
+			<input type="hidden" name="xml" value="" class="xmlContent"/>
+			
 </div>
+</form>

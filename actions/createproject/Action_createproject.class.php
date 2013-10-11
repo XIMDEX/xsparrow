@@ -48,7 +48,7 @@ class Action_createproject extends ActionAbstract {
     public function index() {
 
         $themes = Theme::getAllThemes();
-        error_log(print_r($themes,1));
+        
         $arrayTheme = array();
         foreach ($themes as $theme ) {
             $themeDescription["name"] = $theme->_shortname;
@@ -59,7 +59,7 @@ class Action_createproject extends ActionAbstract {
         }
 
         $values = array(
-            "go_method" => "reloadProjectNode",
+            "go_method" => "createproject",
             "name" => $this->name,
             "themes" => $arrayTheme
         );
@@ -96,10 +96,58 @@ class Action_createproject extends ActionAbstract {
     public function createproject() {
 
         //Creating project
+        
+        $themeName = $this->request->getParam("theme");
+        $xml = $this->request->getParam("xml");
+        $theme = new Theme($themeName);
+        $name = $this->request->getParam("name");
+
+        //1. Create project
+        //2. Add templates and schemas
+        //3. Add Server
+        //4. Add Css, images and common
+        //5. Add ximlet
+        //6. Add document
+
+        $nodeTypeName = "Project";
+        $nodeType = new NodeType();
+        $nodeType->SetByName($nodeTypeName);
+
+        //Creating project
+        $data = array(
+            'NODETYPENAME' => $nodeTypeName,
+            'NAME' => $name,
+            'NODETYPE' => $nodeType->GetID(),
+            'PARENTID' => 10000
+            );
+
+        $io = new BaseIO();
+        $projectId = $io->build($data);
+        if ($projectId < 1) {
+            return false;
+        }
+
+        $servers = $theme->project->getServers();
+        $schemes = $theme->project->getSchemes();
+        $templates = $theme->project->getTemplates();
+
+        foreach($schemes as $scheme){
+            $this->insertFiles($projectid, "schemes", array($scheme));
+        }
+
+        foreach($templates as $template){
+            $this->insertFiles($projectId, "templates", array($template));
+        }
+
+       /** foreach ($servers as $server) {
+            $this->insertServer($server);
+        }*/
+
+        /**
         $nodeID = $this->request->getParam("nodeid");
         $schemaVersion = $this->request->getParam("schemaVersion");
         $styleTheme = $this->request->getParam("styleTheme");
-        $name = $this->request->getParam("name");
+        
         $this->name = $name;
         $nodeType = $this->GetTypeOfNewNode($nodeID);
         $nodeTypeName = $nodeType["name"];
@@ -148,10 +196,11 @@ class Action_createproject extends ActionAbstract {
         foreach ($servers as $server) {
             $this->insertServer($server);
         }
-
+*/
         $template = "success";
 
         $values = array();
+
         $this->render($values, $template, 'default-3.0.tpl');
     }
 
@@ -196,7 +245,7 @@ class Action_createproject extends ActionAbstract {
 	    $cssFolder = "/modules/XSparrow/actions/createproject/resources/css/";
         $this->addJs($jsFolder . "nextActions.js");
 	   $this->addCss($cssFolder."createproject.css");
-
+       
         //$this->reloadNode(10000);
         $template = "success";
 

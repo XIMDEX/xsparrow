@@ -196,13 +196,13 @@ class Loader_Project extends Loader_AbstractNode {
 		$items = $this->xpath->query($query, $this->node);
 		$ret = array();
 		foreach ($items as $item) {
-			$template = new Loader_Scheme($item, $this->xpath, $this->getPath());
+			$scheme = new Loader_Scheme($item, $this->xpath, $this->getPath());
 			$nodeTypeName = "RNGVISUALTEMPLATE";
-			if($template->__get("nodetypename") &&
-				$template->__get("nodeTypeName") == "VISUALTEMPLATE"){
+			if($scheme->__get("nodetypename") &&
+				$scheme->__get("nodeTypeName") == "VISUALTEMPLATE"){
 				$nodeTypeName = "VISUALTEMPLATE";
 			}
-			$ret[] = new Loader_XimFile($nodeTypeName,$templates->getPath());
+			$ret[] = new Loader_XimFile($nodeTypeName,$scheme->getPath());
 		}
 		return $ret;
 	}
