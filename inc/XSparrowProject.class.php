@@ -85,19 +85,25 @@ class XSparrowProject{
 	/**
 	* Create a temp file with all xsl templates includes in a file.
     *
+    * @param String $themeFolder Name for the theme. It will be a folder in data/tmp/XSparrow
+    *
     * @return Object false if error, this object if everything ok.
 	*/
-	public function buildCompressFile(){
+	public function buildCompressFile($themeFolder){
 
 		$arrayTemplates = $this->getTemplates();
+
 		
         $xslContent = "";
+        
         foreach ($arrayTemplates as $filename => $templateFile) {
         	if ($filename != "docxap"){
         		$templateContent = $templateFile->getContent();
-        		$templateContent = preg_replace("/\<\/*xsl:stylesheet.*\>/", "", $templateContent);
-		    	$templateContent = preg_replace("/\<\?xml version.*\>/", "", $templateContent);
+                $filePath = $templateFile->getPath();
+                $filePath = str_replace(Config::GetValue("AppRoot"), Config::GetValue("UrlRoot"), $filePath);
+                $templateContent = '<xsl:include href="'.$filePath.'"/>';
 		    	$xslContent .= $templateContent;		    
+                $cont++;
         	}
         }
 
@@ -113,8 +119,8 @@ class XSparrowProject{
         }
 
         //Replace @@@RMximdex.dotdot()
-        $replacement=Config::GetValue("UrlRoot")."/data/tmp/XSparrow/{$this->version}/{$this->name}/$1";
-        $docxapContent = preg_replace("/@@@RMximdex.dotdot\((.+)\)/", $replacement, $docxapContent);
+        $replacement=Config::GetValue("UrlRoot")."/data/tmp/XSparrow/{$themeFolder}/$1";
+        $docxapContent = preg_replace("/@@@RMximdex.dotdot\((.+)\)@@@/", $replacement, $docxapContent);
 
        	FsUtils::file_put_contents("$tmpFolder/docxap.xsl", $docxapContent);
 
@@ -132,6 +138,7 @@ class XSparrowProject{
 		foreach ($servers as $server) {
 
 			$commons = $server->getCommon();
+            error_log(print_r($commons,true));
             $this->buildTempFiles($commons, "common", $themeFolder);
 			
             $css = $server->getCSS();
@@ -139,7 +146,7 @@ class XSparrowProject{
 			
             $images = $server->getImages();
             $this->buildTempFiles($images, "images", $themeFolder);
-
+            
             
 		}
 	}
@@ -159,6 +166,7 @@ class XSparrowProject{
                     
                 }
             }
+            error_log("Escribiendo en $fullFolderPath/$fileName");
             FsUtils::file_put_contents("$fullFolderPath/$fileName", $content);  
         }
     }
@@ -230,7 +238,7 @@ class XSparrowProject{
     public function getSchemes(){
         $result = array();
 
-        $schemes = $this->project->getServers();
+        $schemes = $this->project->getSchemes();
         if ($this->defaultProject && ($this->defaultProject !== $this->project)){
             $defaultSchemes = $this->defaultProject->getSchemes();
         }
@@ -253,6 +261,10 @@ class XSparrowProject{
 
     public function setProjectId($idProject){
     	$this->project->$projectid=$idProject;
+    }
+
+    public function getBuildProject(){
+        return $this->project;
     }
 
 

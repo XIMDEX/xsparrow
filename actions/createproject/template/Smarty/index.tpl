@@ -31,8 +31,9 @@
 	</fieldset>
 </div>
 <div class="action_content">
-	
-		<label for="name" class="">{t}Name{/t}</label>
+	<div class="theme-selection" style="width:100%">
+	<label for="name" class="">{t}Name{/t}</label>
+
 		<input type="text" name="name" id="name" value="{$name}" class='cajaxg validable not_empty long'/>
 		<a href="#" class="advanced-btn">Advanced settings</a>
 		<div class="advanced-settings">{t}Publication channels{/t}
@@ -62,7 +63,7 @@
 				{/foreach}
 			</ul>
 
-	
+		</div>	
 
 	        <div class="customize-template-form">
 			<div class="custom_options">
@@ -262,6 +263,7 @@
 
 			<div class="templatePreview" style="width:62%; float:right; position:relative">
 				<iframe id="xsparrow-preview" class="xsparrow-preview-frame" style="width:100%; position: relative; height:100%; float:right" frameborder="0" src="{$_URL_ROOT}/xmd/loadaction.php?action=createproject&mod=XSparrow&method=loadPreview" scrolling="auto">
+
 				</iframe>
 			</div>
 			<input type="hidden" name="theme" value="" class="theme"/>

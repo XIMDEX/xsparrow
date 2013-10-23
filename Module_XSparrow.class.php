@@ -74,7 +74,8 @@ class Module_XSparrow extends Module {
 		$arrayThemes = Theme::getAllThemes();
 		foreach ($arrayThemes as $theme) {
 			$theme->buildTempResources();
-			$theme->project->buildCompressFile();
+			$theme->project->buildCompressFile($theme->_shortname);
+			echo($theme->_shortname." theme installed\r\n");
 		}		
 	}
 

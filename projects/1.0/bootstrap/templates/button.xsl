@@ -4,11 +4,11 @@
    		<button uid="{@uid}" type="{@type}" class="btn btn-{@class} btn-{@size}">
    			<xsl:choose>
    				<xsl:when test="@icon!='none'">
-   					<i class="icon-{@icon}"/>									
+   					<span class="glyphicon glyphicon-{@icon}"/>
    				</xsl:when>
    			</xsl:choose>
    			<xsl:choose>
-   				<xsl:when test="@text='' or not(@text)">			
+   				<xsl:when test="@text='' or not(@text)">
    					<xsl:text>[Button]</xsl:text>
    				</xsl:when>
    				<xsl:otherwise>

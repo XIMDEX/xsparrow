@@ -1,4 +1,4 @@
-<?php
+	<?php
 /**
  *  \details &copy; 2011  Open Ximdex Evolution SL [http://www.ximdex.org]
  *
@@ -49,7 +49,7 @@ class Theme {
 	 */
 	public $version;
 
-	private $projectName;
+	public $projectName;
 	public $project=false;
 
 	/**
@@ -110,7 +110,7 @@ class Theme {
 		$sourceFolder = Config::GetValue("AppRoot").MODULE_XSPARROW_PATH.THEMES_FOLDER."/{$this->_shortname}";
 		$tmpFolder = Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$this->_shortname}";
 		if (!is_dir($tmpFolder."/images")){
-            if (!mkdir($tmpFolder."/images",0777,true)){
+            if (!mkdir($tmpFolder."/images/",0777,true)){
 			
             }
 
@@ -136,6 +136,13 @@ class Theme {
         		copy("$sourceFolder/css/$image", "$tmpFolder/css/$image");
         	}	
         }
+
+        //Build a tmp file with docxap.
+       	$configuration = str_replace('<?xml version="1.0" ?>', '<docxap transformer="XSparrow" tipo_documento="configuration.xml">', $this->xml);
+        $configuration.="</docxap>"; 
+       	FsUtils::file_put_contents("$tmpFolder/configuration.xml", $configuration);
+
+
 	}
 
 	/**
@@ -250,7 +257,7 @@ class Theme {
 		//If everything ok
 		if ($result && !$lazy){
 			$rngValidator = new XMLValidator_RNG();
-			if(!$rngValidator->validate($rngFileContent,$xml)){
+			if(!@$rngValidator->validate($rngFileContent,$xml)){
 				XMD_Log::error(LOG_PREFIX."The theme doesn't validate the relaxng $rngFilePath");
 				return false;
 			}

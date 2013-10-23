@@ -33,6 +33,7 @@ ModulesManager::file('/inc/helper/DebugLog.class.php');
 ModulesManager::file('/actions/addximlet/Action_addximlet.class.php');
 ModulesManager::file(MODULE_XSPARROW_PATH . '/inc/Theme.class.php');
 ModulesManager::file(MODULE_XSPARROW_PATH . '/XSparrowProject.class.php');
+ModulesManager::file('/inc/xml/XSLT.class.php');
 
 /**
  * Create a project using XSparrow wizard
@@ -41,6 +42,8 @@ class Action_createproject extends ActionAbstract {
 
     private $project = null;
     public $name ="XSparrow";
+    private $schemas = array();
+    private $theme = null;
 
     /**
      *Main function, first step in the creation project process
@@ -90,17 +93,16 @@ class Action_createproject extends ActionAbstract {
     }
 
     /**
-    *<p>Creating a project from a form.</p>
-    *<p>Get all the values from the request params.</p>
+    *Creating a project from a form.
+    *Get all the values from the request params.
     */
     public function createproject() {
 
-        //Creating project
-        
+        //Creating project        
         $themeName = $this->request->getParam("theme");
         $xml = $this->request->getParam("xml");
-        $theme = new Theme($themeName);
-        $name = $this->request->getParam("name");
+        $this->theme = new Theme($themeName);
+        $this->name = $this->request->getParam("name");
 
         //1. Create project
         //2. Add templates and schemas
@@ -116,7 +118,7 @@ class Action_createproject extends ActionAbstract {
         //Creating project
         $data = array(
             'NODETYPENAME' => $nodeTypeName,
-            'NAME' => $name,
+            'NAME' => $this->name,
             'NODETYPE' => $nodeType->GetID(),
             'PARENTID' => 10000
             );
@@ -127,76 +129,22 @@ class Action_createproject extends ActionAbstract {
             return false;
         }
 
-        $servers = $theme->project->getServers();
-        $schemes = $theme->project->getSchemes();
-        $templates = $theme->project->getTemplates();
-
-        foreach($schemes as $scheme){
-            $this->insertFiles($projectid, "schemes", array($scheme));
+        $servers = $this->theme->project->getServers();
+        $schemas = $this->theme->project->getSchemes();
+        $templates = $this->theme->project->getTemplates();
+        
+        foreach($schemas as $schema){
+            $this->schemas = array_merge($this->schemas, $this->insertFiles($projectId, "schemas", array($schema)));
         }
 
         foreach($templates as $template){
             $this->insertFiles($projectId, "templates", array($template));
         }
 
-       /** foreach ($servers as $server) {
-            $this->insertServer($server);
-        }*/
-
-        /**
-        $nodeID = $this->request->getParam("nodeid");
-        $schemaVersion = $this->request->getParam("schemaVersion");
-        $styleTheme = $this->request->getParam("styleTheme");
-        
-        $this->name = $name;
-        $nodeType = $this->GetTypeOfNewNode($nodeID);
-        $nodeTypeName = $nodeType["name"];
-
-        $nodeType = new NodeType();
-        $nodeType->SetByName($nodeTypeName);
-
-        $xsparrowProject = new XSparrowProject($styleTheme,$schemaVersion);
-
-        //Creating project
-        $data = array(
-            'NODETYPENAME' => $nodeTypeName,
-            'NAME' => $name,
-            'NODETYPE' => $nodeType->GetID(),
-            'PARENTID' => 10000
-            );
-
-        $io = new BaseIO();
-        $projectId = $io->build($data);
-        if ($projectId < 1) {
-            return false;
-        }
-
-
-        $project = new Node($projectId);
-        $xsparrowProject->setProjectId($projectId);
-
-        $this->setAdvancedSettings($project);
-
-        Module::log(Module::SUCCESS, "Project creation O.K.");
-
-        //Get Servers, Schemes and Templates under project node.
-        //Defaults and overloading.
-        $servers = $xsparrowProject->getServers();
-        $schemes = $xsparrowProject->getSchemes();
-        $templates = $xsparrowProject->getTemplates();
-
-        foreach($schemes as $scheme){
-            $this->insertFiles($this->project->projectid, "schemes", array($scheme));
-        }
-
-        foreach($templates as $template){
-            $this->insertFiles($this->project->projectid, "templates", array($template));
-        }
-
         foreach ($servers as $server) {
-            $this->insertServer($server);
+            $this->insertServer($projectId, $server);
         }
-*/
+        
         $template = "success";
 
         $values = array();
@@ -206,7 +154,7 @@ class Action_createproject extends ActionAbstract {
 
 
     /**
-    *<p>Get Possible Channel by default. Giving priority to html or web channel.</p>
+    *Get Possible Channel by default. Giving priority to html or web channel.
     */
     function getChannel() {
         $channels = Channel::GetAllChannels();
@@ -238,27 +186,14 @@ class Action_createproject extends ActionAbstract {
         return $langId;
     }
 
-    public function reloadProjectNode(){
-
-
-        $jsFolder = "/modules/XSparrow/actions/createproject/resources/js/";
-	    $cssFolder = "/modules/XSparrow/actions/createproject/resources/css/";
-        $this->addJs($jsFolder . "nextActions.js");
-	   $this->addCss($cssFolder."createproject.css");
-       
-        //$this->reloadNode(10000);
-        $template = "success";
-
-	$projectName = $this->request->getParam("name");
-        $values = array(
-		"projectName"=>$projectName,
-		"projectPath"=>Config::GetValue("UrlRoot")
-		);
-        $this->render($values, $template, 'default-3.0.tpl');
-    }
-
-
-    private function insertServer($server) {
+    /**
+     * Create a Server Node and all the descendant: xmldocument, ximlet, images, css and common 
+     *
+     * @param int $projectId Ximdex id for node project
+     * @param  Loader_Server $server Object to create the server
+     * @return int Server id.
+     */
+    private function insertServer($projectId, $server) {
 
         $nodeType = new NodeType();
         $nodeType->SetByName($server->nodetypename);
@@ -268,7 +203,7 @@ class Action_createproject extends ActionAbstract {
             'NODETYPENAME' => $server->nodetypename,
             'NAME' => $server->name,
             'NODETYPE' => $idNodeType,
-            'PARENTID' => $this->project->projectid
+            'PARENTID' => $projectId
         );
 
         $io = new BaseIO();
@@ -289,35 +224,19 @@ class Action_createproject extends ActionAbstract {
         $nodeServer->class->AddChannel($physicalServerId, $this->project->channel);
         Module::log(Module::SUCCESS, "Server creation O.K.");
 
-
+        
         // common
-        $commonFolderId = $nodeServer->GetChildByName("common");
-        $newFolderNodeType = new NodeType();
-        $newFolderNodeType->SetByName("CommonFolder");
-        $folder = new Node();
-        $idFolder = $folder->CreateNode("bootstrap", $commonFolderId, $newFolderNodeType->GetID(), null);
-        $common = $server->getCommon("/bootstrap");
-        $ret = $this->insertFiles($commonFolderId, 'bootstrap', $common);
+        $arrayCommon = $server->getCommon();
+        $this->createResourceByFolder($server, "common", "CommonFolder", $arrayCommon);
 
-         //images
-        $imageFolderId = $nodeServer->GetChildByName("images");
-        $newFolderNodeType = new NodeType();
-        $newFolderNodeType->SetByName("ImagesFolder");
-        $folder = new Node();
-        $idFolder = $folder->CreateNode("bootstrap", $imageFolderId, $newFolderNodeType->GetID(), null);
+        //images
+        $arrayImages = $server->getImages();
+        $this->createResourceByFolder($server, "images", "ImagesFolder", $arrayImages);
 
-        $img = $server->getImages("/bootstrap");
-        $ret = $this->insertFiles($imageFolderId, 'bootstrap', $img);
-
-        // CSSs
-        $cssFolderId = $nodeServer->GetChildByName("css");
-        $newFolderNodeType = new NodeType();
-        $newFolderNodeType->SetByName("CssFolder");
-        $folder = new Node();
-        $idFolder = $folder->CreateNode("bootstrap", $cssFolderId, $newFolderNodeType->GetID(), null);
-
-        $css = $server->getCSS("/bootstrap");
-        $ret = $this->insertFiles($cssFolderId, 'bootstrap', $css);
+        //Css
+        $arrayCss = $server->getCSS();
+        $this->createResourceByFolder($server, "css", "CssFolder", $arrayCss);
+        
 
         // document
         $docs = $server->getXimdocs();
@@ -326,8 +245,58 @@ class Action_createproject extends ActionAbstract {
         // ximlet
         $let = $server->getXimlet();
         $ret = $this->insertDocs($server->serverid, $let, true);
-
+        
         return $serverId;
+    }
+
+    private function createResourceByFolder($server, $rootFolderName, $rootFolderNodeType, $arrayXimFiles){
+
+        $nodeServer = new Node($server->serverid);
+        $rootFolderId = $nodeServer->GetChildByName($rootFolderName);
+        $newFolderNodeType = new NodeType();
+        $newFolderNodeType->SetByName($rootFolderNodeType);        
+        $this->createResource($rootFolderId, $arrayXimFiles, $newFolderNodeType->GetID());
+
+    }
+
+    private function createResource($rootFolderId, $arrayXimFiles, $idFolderNodeType){
+
+        $createdFolders = $this->createFolders($rootFolderId, array_keys($arrayXimFiles),$idFolderNodeType);
+        foreach ($arrayXimFiles as $filePath => $ximFileObject) {
+            $lastSlash = strrpos($filePath, "/");
+            $folderPath = substr($filePath, 0, $lastSlash+1);
+            if ($createdFolders[$folderPath]){
+
+                $folderNode = new Node($createdFolders[$folderPath]);
+                $folderName = $folderNode->GetNodeName();
+                $idParent = $folderNode->get("IdParent");
+                $this->insertFiles($idParent, $folderName, array($ximFileObject));
+            }else{
+                //Any error message here
+            }            
+            
+        }
+    }
+
+    private function createFolders($rootFolderId, $arrayNames, $idNodeType){
+        $createdFolders = array("/" => $rootFolderId);
+        foreach ($arrayNames as $name) {
+            $folderId = $rootFolderId;
+            $arrayNews = explode("/", $name);
+            $currentFolderName = "/";
+            for($i = 1; $i < count($arrayNews)-1; $i++){
+                $currentFolderName.= $arrayNews[$i]."/";
+                if (!array_key_exists($currentFolderName, $createdFolders)){
+                    $folder = new Node();
+                    $idFolder = $folder->CreateNode($arrayNews[$i], $folderId, $idNodeType, null);
+                    $createdFolders[$currentFolderName] = $idFolder;
+                }
+                $folderId = $createdFolders[$currentFolderName];
+            }
+
+        }
+
+        return $createdFolders;
     }
 
     function insertDocs($parentId, $files,$isXimlet=false) {
@@ -359,16 +328,17 @@ class Action_createproject extends ActionAbstract {
 
         $io = new BaseIO();
 
-        $title = $this->request->getParam("title");
+      /*$title = $this->request->getParam("title");
         $principalColor = $this->request->getParam("principal_color");
         $secundaryColor = $this->request->getParam("secundary_color");
-        $fontColor = $this->request->getParam("font_color");
+        $fontColor = $this->request->getParam("font_color");*/
 
 
-        foreach ($files as $file) {
-            $templateId = $this->templates[$file->templatename];
-            $file->channel = $file->channel == '{?}' ? $this->project->channel : $file->channel;
-            $file->language = $file->language == '{?}' ? $this->project->language : $file->language;
+        foreach ($files as $file) {            
+            $idSchema = $this->schemas[$file->templatename];
+            $file->channel = $file->channel == '{?}' ? $this->getChannel() : $file->channel;
+            $file->language = $file->language == '{?}' ? $this->getLanguage() : $file->language;
+
 
             $data = array(
                 'NODETYPENAME' => $nodeTypeContainer,
@@ -377,7 +347,7 @@ class Action_createproject extends ActionAbstract {
                 'CHILDRENS' => array(
                     array(
                         'NODETYPENAME' => 'VISUALTEMPLATE',
-                        'ID' => $templateId
+                        'ID' => $idSchema
                     )
                 )
             );
@@ -395,7 +365,7 @@ class Action_createproject extends ActionAbstract {
                 'NODETYPE' => $idNodeType,
                 'PARENTID' => $containerId,
                 'CHILDRENS' => array(
-                    array('NODETYPENAME' => 'VISUALTEMPLATE', 'ID' => $templateId),
+                    array('NODETYPENAME' => 'VISUALTEMPLATE', 'ID' => $idSchema),
                     array('NODETYPENAME' => 'CHANNEL', 'ID' => $file->channel),
                     array('NODETYPENAME' => 'LANGUAGE', 'ID' => $file->language),
                     array('NODETYPENAME' => 'PATH', 'SRC' => $file->getPath())
@@ -404,28 +374,10 @@ class Action_createproject extends ActionAbstract {
 
             $docId = $io->build($data);
             if ($docId > 0  && $isXimlet && $file->name == "config") {
+                $xml = $this->request->getParam("xml");
                 $docNode = new Node($docId);
-                $content = $docNode->GetContent();
-
-                $domDoc = new DOMDocument();
-                $domDoc->preserveWhiteSpace = false;
-        		$domDoc->validateOnParse = true;
-                $domDoc->formatOutput = true;
-        		$domDoc->loadXML($content);
-        		$xpathObj = new DOMXPath($domDoc);
-                $nodeList0 = $xpathObj->query('/config');
-                $nodeConf = $nodeList0->item(0);
-                $nodeConf->setAttribute("font-color",$fontColor);
-                $nodeConf->setAttribute("background-color",$principalColor);
-                $nodeConf->setAttribute("secundary-color","$secundaryColor");
-
-                $nodeList0 = $xpathObj->query('/config/config-header/config-header-title');
-                $nodeTitle = $nodeList0->item(0);
-                $nodeTitle->nodeValue=$title;
-                $content = $domDoc->saveXML();
+                $docNode->SetContent($xml);
                 $content = str_replace('<?xml version="1.0"?>', '', $content);
-                $docNode->SetContent($content);
-
                 $ret[$file->filename] = $docId;
                 Module::log(Module::SUCCESS, "Importing " . $file->name);
             } else if (!($docId > 0))  {
@@ -465,7 +417,6 @@ class Action_createproject extends ActionAbstract {
             $nodeType = new NodeType();
             $nodeType->SetByName($file->nodetypename);
             $idNodeType = $nodeType->get('IdNodeType') > 0 ? $nodeType->get('IdNodeType') : NULL;
-
 
             $data = array(
                 'NODETYPENAME' => $file->nodetypename,
@@ -518,7 +469,7 @@ class Action_createproject extends ActionAbstract {
             return false;
 
         $project = new Node($parentId);
-        $ptdFolderId = $project->GetChildByName('ximptd');
+        $ptdFolderId = $project->GetChildByName('templates');
 
         $nodePtds = new Node($ptdFolderId);
         if (empty($ptdFolderId)) {
@@ -624,13 +575,41 @@ class Action_createproject extends ActionAbstract {
 
 
 	/**
-	*Load the iframe with the Default preview for the selected theme
+	*Load the iframe content from the transformation.
 	*/
     public function loadPreview(){
 
         $values = array();
-        $template = "preview";
-        $this->render($values, $template, 'basic_html.tpl');
+        $themeName = $this->request->getParam("theme");
+
+        $theme = new Theme($themeName);
+        $configXmlPath = Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$theme->_shortname}/configuration.xml";
+        $docxapXslPath = Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$theme->version}/{$theme->projectName}/docxap.xsl";
+        error_log(Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$theme->_shortname}/configuration.xml");
+        error_log(Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$theme->version}/{$theme->projectName}/docxap.xsl");
+        $domDoc = new DOMDocument();
+        $domDoc->preserveWhiteSpace = false;
+        $domDoc->validateOnParse = true;
+        $domDoc->formatOutput = true;
+
+        $xsltHandler = new XSLT();
+        $xsltHandler->setXML($configXmlPath);
+        $xsltHandler->setXSL($docxapXslPath);
+
+        $content = $xsltHandler->process();
+        $domDoc->loadHTML($content);
+        $document = $domDoc->saveHTML();
+
+        $replacement=Config::GetValue("UrlRoot")."/data/tmp/XSparrow/{$theme->_shortname}/$1";
+        $content = preg_replace("/@@@RMximdex.dotdot\((.+)\)@@@/", $replacement, $content);
+        if ($content){
+            print_r($content);
+            die();           
+        }else{
+            $template = "preview";
+            $this->render($values, $template, 'basic_html.tpl');
+        }
+
     }
 
     public function getTheme(){

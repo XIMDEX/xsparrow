@@ -2,21 +2,21 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
     <xsl:template name="ximlet" match="ximlet">
         <xsl:choose>
-            <xsl:when test="//docxap[@transformer]/@transformer!='xEDIT'">
+            <xsl:when test="/docxap/@transformer!='xEDIT'">
                 <xsl:for-each select="*">
                     <xsl:if test="name() != 'theme-properties'">
                         <xsl:apply-templates select="."/>
                     </xsl:if>
                 </xsl:for-each>
             </xsl:when>
-            <xsl:when test="not(config)">
-                <div uid="{@uid}">
+            <xsl:when test="not(xsparrow-theme)">
+                <div uid="{@uid}">aa
                     <xsl:apply-templates/>
                 </div>
             </xsl:when>
             <xsl:otherwise>
-                <span uid="{@uid}">
-                    <xsl:apply-templates select="main"/>
+                <span uid="{@uid}">bb
+                    <xsl:apply-templates select="xsparrow-theme/main/header"/>
                 </span>
             </xsl:otherwise>
         </xsl:choose>

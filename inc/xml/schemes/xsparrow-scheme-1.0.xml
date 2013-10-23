@@ -86,7 +86,6 @@
 				</choice>
 			</attribute>
 			<attribute name="font-color" xim:type="color"/>
-			<attribute name="font-size"/>
 			<attribute name="image" xim:type="imageSelector"/>
 
 			<attribute name="image-side">

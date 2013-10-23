@@ -192,18 +192,21 @@ class Loader_Project extends Loader_AbstractNode {
 	}
 
 	public function getSchemes() {
-		$query = sprintf("/project/schemes/scheme");
-		$items = $this->xpath->query($query, $this->node);
+
+		//Backward compatibility. Allow xml transformer.
+		$extension = 'xml';
+		$nodetypename = 'RNGVISUALTEMPLATE';
+
+		$path = $this->getPath() . '/schemes';
+	    $files = FsUtils::readFolder($path, false);	    
 		$ret = array();
-		foreach ($items as $item) {
-			$scheme = new Loader_Scheme($item, $this->xpath, $this->getPath());
-			$nodeTypeName = "RNGVISUALTEMPLATE";
-			if($scheme->__get("nodetypename") &&
-				$scheme->__get("nodeTypeName") == "VISUALTEMPLATE"){
-				$nodeTypeName = "VISUALTEMPLATE";
-			}
-			$ret[] = new Loader_XimFile($nodeTypeName,$scheme->getPath());
-		}
+		if ($files){
+			foreach ($files as $file) {				
+	            if (preg_match(sprintf('/\.%s$/', $extension), $file)) {
+					$ret[] = new Loader_XimFile($nodetypename, "$path/$file");
+	            }
+			}	
+		}		
 		return $ret;
 	}
 
@@ -288,14 +291,16 @@ class Loader_Section extends Loader_AbstractNode {
 		$recursiveRet = $ret = array();
 		if ($files){
 			foreach ($files as $file) {
+				error_log("File: ".$file);
+				$newRecursiveFolderName = "";
 				if (is_dir("$path/$file")){
-					$recursiveFolderName.="/$file";
-					$recursiveRet = $this->getCommon($recursiveFolderName);
+					$newRecursiveFolderName = "$recursiveFolderName/$file";
+					$recursiveRet = array_merge($this->getCommon($newRecursiveFolderName),$recursiveRet);
 				}else{
 					$ret["$recursiveFolderName/$file"] = new Loader_XimFile('TextFile', "$path/$file");
 				}
 			}
-		}
+		}		
 		return array_merge($recursiveRet,$ret);
 	}
 
@@ -305,9 +310,10 @@ class Loader_Section extends Loader_AbstractNode {
 		$recursiveRet = $ret = array();
 		if ($files){
 			foreach ($files as $file) {
+				$newRecursiveFolderName = "";
 				if (is_dir("$path/$file")){
-					$recursiveFolderName .= "/$file";
-					$recursiveRet = $this->getImages($recursiveFolderName);				
+					$newRecursiveFolderName = "$recursiveFolderName/$file";
+					$recursiveRet = array_merge($this->getImages($newRecursiveFolderName),$recursiveRet);
 				}else{
 	                $ret["$recursiveFolderName/$file"] = new Loader_XimFile('IMAGEFILE', "$path/$file");
 	                
@@ -392,10 +398,11 @@ class Loader_Server extends Loader_Section {
 		$files = FsUtils::readFolder($path, false);
 		$recursiveRet = $ret = array();
 		if ($files){
-			foreach ($files as $file) {			
+			foreach ($files as $file) {
+				$newRecursiveFolderName = "";
 				if (is_dir("$path/$file")){
-					$recursiveFolderName.="/$file";
-					$recursiveRet = $this->getCss($recursiveFolderName);
+					$newRecursiveFolderName = "$recursiveFolderName/$file";
+					$recursiveRet = array_merge($this->getCss($newRecursiveFolderName),$recursiveRet);
 				}else{
 					$ret["$recursiveFolderName/$file"] = new Loader_XimFile('CSSFILE', "$path/$file");
 				}
