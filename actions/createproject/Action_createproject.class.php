@@ -51,6 +51,27 @@ class Action_createproject extends ActionAbstract {
     public function index() {
 
         $themes = Theme::getAllThemes();
+
+        $nodeProjectRoot = new Node(10000);
+        $arrayChildrens = $nodeProjectRoot->GetChildren();
+        $arrayProjectNames = array();
+        foreach ($arrayChildrens as $idChildren) {
+            $nodeProject = new Node($idChildren);
+            $arrayProjectNames[] = $nodeProject->GetNodeName();
+        }
+        $prefixName = "XSparrow";
+        $proposalName = $prefixName;
+        $foundValidName = false;
+        $cont = 1;
+        do {
+            if (!in_array($proposalName, $arrayProjectNames)){
+                $foundValidName = true;
+            }else{
+                $proposalName = $prefixName.$cont;
+                $cont++;
+            }
+            
+        } while (!$foundValidName);
         
         $arrayTheme = array();
         foreach ($themes as $theme ) {
@@ -63,7 +84,7 @@ class Action_createproject extends ActionAbstract {
 
         $values = array(
             "go_method" => "createproject",
-            "name" => $this->name,
+            "name" => $proposalName,
             "themes" => $arrayTheme
         );
 
@@ -617,8 +638,8 @@ class Action_createproject extends ActionAbstract {
         $themeName = $this->request->getParam("theme");
         $theme = new Theme($themeName);
         header('Content-type: text/xml');
-        if ($theme){
-            print $theme->xml;
+        if ($theme){            
+            print trim($theme->xml);
         }
         else
             print "<error/>";
