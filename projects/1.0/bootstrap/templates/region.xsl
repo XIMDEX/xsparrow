@@ -3,12 +3,12 @@
 	<xsl:template name="region" match="region">
 		<xsl:choose>
 			<xsl:when test="*">
-				<div class="cols-md-{@cols} cols-md-offset-{@offset}" uid="{@uid}">
+				<div class="col-md-{@cols} col-md-offset-{@offset}" uid="{@uid}">
 					<xsl:apply-templates select="*"/>
 				</div>
 			</xsl:when>
 			<xsl:otherwise>
-				<div class="cols-md-{@cols} cols-md-offset-{@offset}" uid="{@uid}">
+				<div class="col-md-{@cols} col-md-offset-{@offset}" uid="{@uid}">
 					Insert content here
 				</div>
 			</xsl:otherwise>

@@ -13,7 +13,7 @@
  			</li>
          </xsl:when>
          <xsl:otherwise>
-	    <img src="{$src}" uid="{@uid}" class="img-@style"/>
+	    <img src="{$src}" uid="{@uid}" class="img-{@style}"/>
          </xsl:otherwise>
      </xsl:choose>
    </xsl:template>

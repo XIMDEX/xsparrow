@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
    	<xsl:template name="button" match="button">
-   		<button uid="{@uid}" type="{@type}" class="btn btn-{@class} btn-{@size}">
+   		<button uid="{@uid}" type="{@type}" class="btn btn-{@type} btn-{@size}">
    			<xsl:choose>
    				<xsl:when test="@icon!='none'">
    					<span class="glyphicon glyphicon-{@icon}"/>

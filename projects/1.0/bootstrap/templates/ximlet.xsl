@@ -10,13 +10,13 @@
                 </xsl:for-each>
             </xsl:when>
             <xsl:when test="not(xsparrow-theme)">
-                <div uid="{@uid}">aa
+                <div uid="{@uid}">
                     <xsl:apply-templates/>
                 </div>
             </xsl:when>
             <xsl:otherwise>
-                <span uid="{@uid}">bb
-                    <xsl:apply-templates select="xsparrow-theme/main/header"/>
+                <span uid="{@uid}">
+                    <xsl:apply-templates select="xsparrow-theme/body/header"/>
                 </span>
             </xsl:otherwise>
         </xsl:choose>

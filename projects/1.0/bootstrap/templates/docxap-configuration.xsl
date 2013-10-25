@@ -12,13 +12,13 @@
         <xsl:call-template name="INCLUDE-css"/>
         <xsl:call-template name="INCLUDE-style"/>
       </head>
-      <body>
+      
         <xsl:choose>
           <xsl:when test="/docxap/@tipo_documento='configuration.xml'">
-            <xsl:apply-templates select="/docxap/xsparrow-theme/main"/>
+            <xsl:apply-templates select="/docxap/xsparrow-theme/body"/>
           </xsl:when>
           <xsl:when test="/docxap/@tipo_documento='menu.xml'">
-            <xsl:apply-templates select="/docxap/xsparrow-theme/main"/>
+            <xsl:apply-templates select="/docxap/xsparrow-theme/body"/>
           </xsl:when>
           <xsl:when test="/docxap/@tipo_documento='new.xml'">
             <xsl:apply-templates select="/docxap/ximlet/menu/.."/>
@@ -26,11 +26,15 @@
             <xsl:apply-templates select="/docxap/new"/>
           </xsl:when>
           <xsl:when test="/docxap/@tipo_documento='basic-document.xml'">
+            <body class="body">
             <xsl:apply-templates select="/docxap/ximlet/menu/.."/>
-            <xsl:apply-templates select="/docxap/ximlet/xsparrow-theme/main/header/../../.."/>
-            <xsl:apply-templates select="content"/>
-            <xsl:apply-templates select="/docxap/ximlet/xsparrow-theme/main/footer"/>
+            <div class="container">
+              <xsl:apply-templates select="/docxap/ximlet/xsparrow-theme/body/header/../../.."/>
+              <xsl:apply-templates select="content"/>
+              <xsl:apply-templates select="/docxap/ximlet/xsparrow-theme/body/footer"/>
+            </div>
             <xsl:call-template name="INCLUDE-js"/>
+          </body>
           </xsl:when>
           <xsl:otherwise>
             <xsl:apply-templates select="/docxap/ximlet/menu/.."/>
@@ -38,8 +42,7 @@
             <xsl:apply-templates select="/docxap/ximlet/xsparrow-theme/main/content"/>
             <xsl:apply-templates select="/docxap/ximlet/footer/.."/>
           </xsl:otherwise>
-        </xsl:choose>
-      </body>
+        </xsl:choose>      
     </html>
   </xsl:template>
 </xsl:stylesheet>

@@ -11,9 +11,11 @@
 			<attribute name="version"/>
 			<optional><attribute name="project"/></optional>
 			<ref name="theme-properties.class"/>
-			<ref name="main.class"/>
+			<ref name="body.class"/>
 		</element>
 	</define>
+	<!--Theme properties-->
+
 	<!--Theme properties-->
 
 	<define name="theme-properties.class">
@@ -55,8 +57,35 @@
 
 	<!--End of Theme properties-->
 
-	<define name="main.class">
-		<element name="main">
+	<define name="body.class">
+		<element name="body">
+			<attribute name="background-color" xim:type="color"/>
+			<attribute name="background-image" xim:type="imageSelector"/>
+			<attribute name="background-position">
+				<choice>
+					<value type="string">none</value>
+					<value type="string">left top</value>
+					<value type="string">left center</value>
+					<value type="string">left bottom</value>
+					<value type="string">center top</value>
+					<value type="string">center center</value>
+					<value type="string">center bottom</value>
+					<value type="string">right top</value>
+					<value type="string">right center</value>
+					<value type="string">right bottom</value>
+				</choice>
+			</attribute>
+			<attribute name="background-repeat">
+				<choice>
+					<value type="string">no-repeat</value>
+					<value type="string">repeat</value>
+					<value type="string">repeat-x</value>
+					<value type="string">repeat-y</value>
+
+				</choice>
+			</attribute>
+			<attribute name="font-color" xim:type="color" />
+			<attribute name="font-size" />			
 			<ref name="header.class"/>
 			<ref name="content.class"/>
 			<ref name="footer.class"/>
@@ -91,6 +120,15 @@
 				</choice>
 			</attribute>
 			<attribute name="font-color" xim:type="color"/>
+			<attribute name="font-size"/>
+			<attribute name="align">
+				<choice>
+					<value type="string"></value>
+					<value type="string">left</value>
+					<value type="string">center</value>
+					<value type="string">right</value>					
+				</choice>
+			</attribute>
 			<attribute name="image" xim:type="imageSelector"/>
 
 			<attribute name="image-side">
@@ -99,15 +137,6 @@
 					<value type="string">right</value>
 				</choice>
 			</attribute>
-			<attribute name="border">
-				<choice>
-					<value type="string">None</value>
-					<value type="string">All</value>
-					<value type="string">Top/Bottom</value>
-					<value type="string">Left/Right</value>
-				</choice>
-			</attribute>
-			<attribute name="border-color" />
 			<interleave>
 				<ref name="layout.class"/>
 				<ref name="header-title.class"/>
@@ -126,32 +155,14 @@
 		</element>
 	</define>
 	<define name="header-title.class">
-		<element name="header-title">
-			<attribute name="font-color" />
-			<attribute name="font-size" />
-			<attribute name="align">
-				<choice>
-					<value type="string">left</value>
-					<value type="string">center</value>
-					<value type="string">right</value>
-				</choice>
-			</attribute>
+		<element name="header-title">			
 			<text/>
 			<xim:description>Title</xim:description>
 			<xim:default_content>Your title!</xim:default_content>
 		</element>
 	</define>
 	<define name="header-subtitle.class">
-		<element name="header-subtitle">
-			<attribute name="font-color" />
-			<attribute name="font-size" />
-			<attribute name="align">
-				<choice>
-					<value type="string">left</value>
-					<value type="string">center</value>
-					<value type="string">right</value>
-				</choice>
-			</attribute>
+		<element name="header-subtitle">			
 			<text/>
 			<xim:description>Subtitle</xim:description>
 			<xim:default_content>Write something about this website</xim:default_content>
@@ -172,137 +183,23 @@
 					<value type="string">Yes</value>
 				</choice>
 			</attribute>
-			<attribute name="background-color"/>
-			<attribute name="background-image" xim:type="imageSelector"/>
-			<attribute name="background-position">
+			
+			<attribute name="align">
 				<choice>
-					<value type="string">none</value>
-					<value type="string">left top</value>
-					<value type="string">left center</value>
-					<value type="string">left bottom</value>
-					<value type="string">center top</value>
-					<value type="string">center center</value>
-					<value type="string">center bottom</value>
-					<value type="string">right top</value>
-					<value type="string">right center</value>
-					<value type="string">right bottom</value>
+					<value type="string"></value>
+					<value type="string">left</value>
+					<value type="string">center</value>
+					<value type="string">right</value>					
 				</choice>
 			</attribute>
-			<attribute name="background-repeat">
-				<choice>
-					<value type="string">no-repeat</value>
-					<value type="string">repeat</value>
-					<value type="string">repeat-x</value>
-					<value type="string">repeat-y</value>
 
-				</choice>
-			</attribute>
-			<ref name="layout.class"/>
-			<ref name="left-column.class"/>
-			<ref name="main-column.class"/>
-			<ref name="right-column.class"/>
 			<text/>
 			<xim:description>Container</xim:description>
 			<xim:default_content>[Container]</xim:default_content>
 		</element>
 	</define>
 
-	<define name="left-column.class">
-		<element name="left-column">
-			<text/>
-			<xim:description>Left Column</xim:description>
-			<xim:default_content>[Left Column]</xim:default_content>
-		</element>
-	</define>
-
-	<define name="main-column.class">
-		<element name="main-column">
-			<ref name="title-element.class" />
-			<ref name="subtitle-element.class" />
-			<ref name="link-element.class" />
-			<text/>
-			<xim:description>Main Column</xim:description>
-			<xim:default_content>[Main Column]</xim:default_content>
-		</element>
-	</define>
-
-	<define name="link-element.class">
-		<element name="link-element">
-			<attribute name="font-color" />
-			<attribute name="font-color-hover" />
-			<attribute name="border-bottom">
-				<choice>
-					<value type="string">none</value>
-					<value type="string">solid</value>
-					<value type="string">dotted</value>
-					<value type="string">dashed</value>
-				</choice>
-			</attribute>
-			<text/>
-			<xim:description>Link-format</xim:description>
-			<xim:default_content>sample link</xim:default_content>
-		</element>
-	</define>
-
-	<define name="title-element.class">
-		<element name="title-element">
-			<attribute name="font-color" />
-			<attribute name="font-size" />
-			<attribute name="border-bottom">
-				<choice>
-					<value type="string">none</value>
-					<value type="string">solid</value>
-					<value type="string">dotted</value>
-					<value type="string">dashed</value>
-				</choice>
-			</attribute>
-			<attribute name="border-size">
-				<choice>
-					<value type="string">0px</value>
-					<value type="string">1px</value>
-					<value type="string">2px</value>
-					<value type="string">3px</value>
-				</choice>
-			</attribute>
-			<text/>
-			<xim:description>Title-format</xim:description>
-			<xim:default_content>Define the title format</xim:default_content>
-		</element>
-	</define>
-
-	<define name="subtitle-element.class">
-		<element name="subtitle-element">
-			<attribute name="font-color" />
-			<attribute name="font-size" />
-			<attribute name="border-bottom">
-				<choice>
-					<value type="string">none</value>
-					<value type="string">solid</value>
-					<value type="string">dotted</value>
-					<value type="string">dashed</value>
-				</choice>
-			</attribute>
-			<attribute name="border-size">
-				<choice>
-					<value type="string">0px</value>
-					<value type="string">1px</value>
-					<value type="string">2px</value>
-					<value type="string">3px</value>
-				</choice>
-			</attribute>
-			<text/>
-			<xim:description>Subtitle-format</xim:description>
-			<xim:default_content>Edit your own subtitle</xim:default_content>
-		</element>
-	</define>
-
-	<define name="right-column.class">
-		<element name="right-column">
-			<text/>
-			<xim:description>Right Column</xim:description>
-			<xim:default_content>[Right Column]</xim:default_content>
-		</element>
-	</define>
+	
 
 	<define name="footer.class">
 		<element name="footer">
