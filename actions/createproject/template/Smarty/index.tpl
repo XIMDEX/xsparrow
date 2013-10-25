@@ -22,7 +22,7 @@
  *  @author Ximdex DevTeam <dev@ximdex.com>
  *  @version $Revision$
  *}
- <form method="post" id="mu_action" action="{$action_url}" enctype="multipart/form-data">
+<form method="post" id="mu_action" action="{$action_url}" enctype="multipart/form-data">
 <div class="action_header">
    	<h2 class="action">{t}Create project{/t}</h2>
    	<fieldset class="buttons-form">
@@ -65,7 +65,7 @@
 
 		</div>	
 
-	        <div class="customize-template-form">
+			<div class="customize-template-form">
 			<div class="custom_options">
 
 					<div class="site_header">
@@ -98,14 +98,14 @@
 							<dt>Text</dt>
 							<dd>
 								<input type="color" name='font-color' id="secundary_color" value="#006b6c" class='input_colorpicker button font-color icon' data-tag="header" data-attribute="font-color"/>
-								<select id="select1" name="text-align" data-tag="header-title" data-attribute="align" class="text-align ximdexInput small vertical collapsable icon button">
+								<select id="select1" name="text-align" data-tag="header" data-attribute="align" class="text-align ximdexInput small vertical collapsable icon button">
 									<option value="left" selected="selected"></option>
 									<option value="center"></option>
 									<option value="right" ></option>
 									<option value="justify" ></option>
 								</select>
 								<span class="font-size icon button">
-									<div class="range-bg"><input type="range" name="rango" id="rango" min="0" max="100" step="1"/></div>
+									<div class="range-bg"><input data-tag="header" data-attribute="font-size" type="range" name="rango" id="rango" min="80" max="120" step="1"/></div>
 								</span>
 								<select id="fonts" class="font-selector icon button">
 									<option value="Chelsea Market">Chelsea Market</option>
@@ -134,7 +134,7 @@
 								</select></dd>
 							<dt>Background</dt>
 							<dd>
-								<input type="color" name='secundary_color' id="secundary_color" value="#006b6c" class='input_colorpicker button bg-color' data-tag="content" data-attribute="background-color"/>
+								<input type="color" name='secundary_color' id="secundary_color" value="#006b6c" class='input_colorpicker button bg-color' data-tag="body" data-attribute="background-color"/>
 								<span class="img-uploader icon button"><input type="file" /></span>
 								<select id="select1" name="bg-position" class="ximdexInput small vertical collapsable icon bg-position button">
 									<option value="lt" selected="selected"></option>
@@ -152,15 +152,15 @@
 							</dd>
 							<dt>Text</dt>
 							<dd>
-								<input type="color" name='secundary_color' data-tag="content" data-attribute="font-color" value="#006b6c" class='input_colorpicker button font-color icon'/>
-								<select id="select1" name="text-align" class="text-align ximdexInput small vertical collapsable icon button">
+								<input type="color" name='secundary_color' data-tag="body" data-attribute="font-color" value="#006b6c" class='input_colorpicker button font-color icon'/>
+								<select id="select1" name="text-align" data-tag="content" data-attribute="align" class="text-align ximdexInput small vertical collapsable icon button">
 									<option value="left" selected="selected"></option>
 									<option value="center"></option>
 									<option value="right" ></option>
 									<option value="justify" ></option>
 								</select>
 								<span class="font-size icon button">
-									<div class="range-bg"><input type="range" name="rango" id="rango" min="0" max="100" step="1"/></div>
+									<div class="range-bg"><input data-tag="body" data-attribute="font-size" type="range" name="rango" id="rango" min="80" max="120" step="1"/></div>
 								</span>
 								<select id="fonts" class="font-selector icon button">
 									<option value="Chelsea Market">Chelsea Market</option>
@@ -228,40 +228,15 @@
 									<option value="Jura">Jura</option>
 									<option value="Ubuntu">Ubuntu</option>
 								</select>
-
 							</dd>
 						</dl>
-
 					</div>
 
 
-		<!--
-
-
-								<input type="range" name="rango" id="rango" min="0" max="100" step="1"/>
-
-
-					<label for="password_repeated" class="aligned">{t}Font color{/t}</label>
-					<input type="color" name='secundary_color' id="secundary_color" value="#ffffff" class='input_colorpicker'/>
-
-					<select id="fonts">
-									<option value="Chelsea Market">Chelsea Market</option>
-									<option value="Droid Serif" selected="selected">Droid Serif</option>
-									<option value="Ruluko">Ruluko</option>
-									<option value="Ruda">Ruda</option>
-									<option value="Magra">Magra</option>
-									<option value="Esteban">Esteban</option>
-									<option value="Lora">Lora</option>
-									<option value="Jura">Jura</option>
-									<option value="Ubuntu">Ubuntu</option>
-								</select>
-
-
-			</div>-->
-
+	
 			</div>
 
-			<div class="templatePreview" style="width:62%; float:right; position:relative">
+			<div class="templatePreview" style="position:absolute; left:28%; right:0; top:0; bottom:0">
 				<iframe id="xsparrow-preview" class="xsparrow-preview-frame" style="width:100%; position: relative; height:100%; float:right" frameborder="0" src="{$_URL_ROOT}/xmd/loadaction.php?action=createproject&mod=XSparrow&method=loadPreview" scrolling="auto">
 
 				</iframe>

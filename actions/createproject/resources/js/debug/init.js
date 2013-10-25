@@ -6,7 +6,8 @@ X.actionLoaded(function (event, fn, params){
 					stylesMap:{
 						"font-color":"color",
 						"background-color": "backgroundColor",
-						"align": "textAlign"
+						"align": "textAlign",
+						"font-size": "fontSize",
 					}
 				};
 
@@ -26,10 +27,24 @@ X.actionLoaded(function (event, fn, params){
 	        var that = this;
 			//set the iframe property
 	        fn("iframe").load(function(){
+
 				that.$iframe = $(this).contents().find("body");
+				that.$iframe.find(".xsparrow-header-title").attr("contentEditable", true).on("keyup",
+					function(){
+						//Set title text
+  						var titleText = $(this).text();
+    					$(that.xml).find("header-title").text(titleText);
+  	   					fn("input[name='xml']").val(that.xml.documentElement.outerHTML) ;
+					});
+				that.$iframe.find(".xsparrow-header-subtitle").attr("contentEditable", true).on("keyup",
+					function(){
+						var subtitleText = $(this).text();
+						$(that.xml).find("header-subtitle").text(subtitleText);
+						fn("input[name='xml']").val(that.xml.documentElement.outerHTML) ;
+					});
 			});
 
-			//Click on every custom link.There is a custom link per project
+	        //Click on every custom link.There is a custom link per project
 		      fn("li.theme div.actions a.custom").click(this._selectTheme.bind(this));
 
 			//InputSelect creation. Redefined onchange and onhover events.
@@ -38,7 +53,13 @@ X.actionLoaded(function (event, fn, params){
 				onChange: function(){
 					var tag = this.getAttribute("data-tag");
 					var attribute = this.getAttribute("data-attribute");
-			        var currentHtmlTag = that.$iframe[0].getElementsByClassName(tag)[0];
+					var currentHtmlTag = false;
+					if (tag == "body"){
+						currentHtmlTag = that.$iframe[0];
+					}else{
+						currentHtmlTag = that.$iframe[0].getElementsByClassName("xsparrow-"+tag)[0];	
+					}
+			        
 					var currentXmlTag = that.xml.getElementsByTagName(tag)[0];
 					that.setCurrentHtmlTag(currentHtmlTag);
 					that.setCurrentXmlTag(currentXmlTag);
@@ -47,7 +68,7 @@ X.actionLoaded(function (event, fn, params){
 				},
 				//Onhover update only html related tag
 				onHover: function(event){
-					console.log("aaa");
+					
 				}
 			});
 
@@ -143,7 +164,19 @@ X.actionLoaded(function (event, fn, params){
 				dataType: "xml",
 				success: function(data){
 					that.xml = data;
-					fn("input[name='xml']").val(data.documentElement.outerHTML) ;
+					fn("input[name='xml']").val(data.documentElement.outerHTML);
+					fn("div.custom-colorpicker").each(function(){
+						var tag = $(this).attr("data-tag");
+						var attribute = $(this).attr("data-attribute");
+						var color = $(that.xml).find(tag).attr(attribute);
+						if (color && color != "")
+							if (color.indexOf("#")!== -1){
+								color=color.substring(1);								
+							}
+							$(this).css("background-color","#"+color);
+							$(this).ColorPickerSetColor(color);
+					});
+
 	          	},
 	          	error: function(data){
 
@@ -160,7 +193,12 @@ X.actionLoaded(function (event, fn, params){
 
 		onShow: function(){
 				var tag = this.getAttribute("data-tag");
-				var currentHtmlTag = theme.$iframe[0].getElementsByClassName(tag)[0];
+				if (tag=="body"){
+					var currentHtmlTag = theme.$iframe[0];	
+				}else{
+					var currentHtmlTag = theme.$iframe[0].getElementsByClassName("xsparrow-"+tag)[0];
+				}
+				
 				var currentXmlTag = theme.xml.getElementsByTagName(tag)[0];
 				theme.setCurrentHtmlTag(currentHtmlTag);
 				theme.setCurrentXmlTag(currentXmlTag);
@@ -183,6 +221,56 @@ X.actionLoaded(function (event, fn, params){
 		$(this).ColorPickerSetColor(this.value);
 	});
 
+
+	$("input[type='range']").each(function(){
+
+        $element = $(this);
+
+        var $newElement = $("<div/>").addClass($element.attr("class"));
+        $newElement.attr("name",$element.attr("name"));
+        $newElement.attr("id",$element.attr("id"));
+        $newElement.attr("min",$element.attr("min"));
+        $newElement.attr("max",$element.attr("max"));
+        $newElement.attr("step",$element.attr("step"));
+        $newElement.attr("data-tag",$element.attr("data-tag"));
+        $newElement.attr("data-attribute",$element.attr("data-attribute"));
+
+        $element.after($newElement);
+        $element.remove();
+
+        var min = $newElement.attr("min")? parseInt($newElement.attr("min")):1,
+                max = $newElement.attr("max")? parseInt($newElement.attr("max")): 100,        
+                step = $newElement.attr("step")? parseInt($newElement.attr("step")): 1;
+        var opt = {
+                range:"min",
+                min:min,
+                max:max,
+                step:step,
+                change: function(event,ui){
+                		
+                        $("a.ui-slider-handle", $(event.target)).attr("title",ui.value);
+                        theme.setXml(event.target.getAttribute("data-tag"),
+                        	event.target.getAttribute("data-attribute"),ui.value+"%");
+                        
+                },
+                start: function(event, ui){
+                	var tag = event.currentTarget.getAttribute("data-tag");
+					if (tag=="body"){
+						var currentHtmlTag = theme.$iframe[0];	
+					}else{
+						var currentHtmlTag = theme.$iframe[0].getElementsByClassName("xsparrow-"+tag)[0];
+					}
+				
+					var currentXmlTag = theme.xml.getElementsByTagName(tag)[0];
+					theme.setCurrentHtmlTag(currentHtmlTag);
+					theme.setCurrentXmlTag(currentXmlTag);
+                }
+        }
+        $newElement.slider(opt);
+}
+
+);
+
 	fn("select.font-selector").fontSelector();
 
 	fn("input#title").bind("keyup", function(){
@@ -196,11 +284,7 @@ X.actionLoaded(function (event, fn, params){
 			$(this).next("div").toggleClass("advanced-settings");
   		});
 
-  	var btn = fn('.submit-button').get(0);
-  	$(btn).click(function(event, button){
-  	        
-  	});
-
+  	
   	fn("li.theme div.actions a.select").click(function(){
 
 		return false;
