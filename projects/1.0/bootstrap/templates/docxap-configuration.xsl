@@ -10,6 +10,7 @@
       <head>
         <xsl:call-template name="INCLUDE-metas"/>
         <xsl:call-template name="INCLUDE-css"/>
+        <xsl:call-template name="INCLUDE-fonts"/>
         <xsl:call-template name="INCLUDE-style"/>
       </head>
       

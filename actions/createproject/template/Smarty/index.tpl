@@ -80,21 +80,25 @@
 							<dt>Background</dt>
 							<dd>
 								<input type="color" name='background-color' data-tag="header" data-attribute="background-color" id="secundary_color" value="#006b6c" class='input_colorpicker button bg-color'/>
-								<span class="img-uploader icon button"><input type="file" /></span>
-								<select id="select1" name="bg-position" class="ximdexInput small vertical collapsable icon bg-position button">
+								<span class="img-uploader icon button"><input type="file" data-tag="header" data-attribute="background-image" /></span>
+								
+							</dd>
+							<span class="background-selectors hidden">
+								<select id="select1" name="bg-position" class="ximdexInput small vertical collapsable icon bg-position button" data-tag="header" data-attribute="background-position">
 									<option value="lt" selected="selected"></option>
 									<option value="rt"></option>
 									<option value="lb" ></option>
 									<option value="rb" ></option>
 									<option value="cc" ></option>
 								</select>
-								<select id="select1" name="bg-repeat" class="ximdexInput small vertical collapsable icon bg-repeat button">
+								<select id="select1" name="bg-repeat" class="ximdexInput small vertical collapsable icon bg-repeat button" data-tag="header" data-attribute="background-repeat">
 									<option value="repeat-x" selected="selected"></option>
 									<option value="repeat-y"></option>
 									<option value="no-repeat" ></option>
 									<option value="repeat" ></option>
 								</select>
-							</dd>
+								<button type="" class="remove-image" data-tag="header">Remove</button>
+							</span>
 							<dt>Text</dt>
 							<dd>
 								<input type="color" name='font-color' id="secundary_color" value="#006b6c" class='input_colorpicker button font-color icon' data-tag="header" data-attribute="font-color"/>
@@ -105,9 +109,9 @@
 									<option value="justify" ></option>
 								</select>
 								<span class="font-size icon button">
-									<div class="range-bg"><input data-tag="header" data-attribute="font-size" type="range" name="rango" id="rango" min="80" max="120" step="1"/></div>
+									<div class="range-bg"><input data-tag="header-title" data-attribute="font-size" type="range" name="rango" id="rango" min="80" max="120" step="1"/></div>
 								</span>
-								<select id="fonts" class="font-selector icon button">
+								<select id="fonts" class="font-selector icon button" data-tag="header" data-attribute="font-family">
 									<option value="Chelsea Market">Chelsea Market</option>
 									<option value="Droid Serif" selected="selected">Droid Serif</option>
 									<option value="Ruluko">Ruluko</option>
@@ -135,21 +139,23 @@
 							<dt>Background</dt>
 							<dd>
 								<input type="color" name='secundary_color' id="secundary_color" value="#006b6c" class='input_colorpicker button bg-color' data-tag="body" data-attribute="background-color"/>
-								<span class="img-uploader icon button"><input type="file" /></span>
-								<select id="select1" name="bg-position" class="ximdexInput small vertical collapsable icon bg-position button">
+								<span class="img-uploader icon button"><input type="file" data-tag="body" data-attribute="background-image" /></span>															</dd>
+							<span class="background-selectors hidden">
+								<select id="select1" name="bg-position" class="ximdexInput small vertical collapsable icon bg-position button" data-tag="body" data-attribute="background-position">
 									<option value="lt" selected="selected"></option>
 									<option value="rt"></option>
 									<option value="lb" ></option>
 									<option value="rb" ></option>
 									<option value="cc" ></option>
 								</select>
-								<select id="select1" name="bg-repeat" class="ximdexInput small vertical collapsable icon bg-repeat button">
+								<select id="select1" data-tag="body" data-attribute="background-repeat" name="bg-repeat" class="ximdexInput small vertical collapsable icon bg-repeat button">
 									<option value="repeat-x" selected="selected"></option>
 									<option value="repeat-y"></option>
 									<option value="no-repeat" ></option>
 									<option value="repeat" ></option>
 								</select>
-							</dd>
+								<button type="" class="remove-image" data-tag="body">Remove</button>
+							</span>
 							<dt>Text</dt>
 							<dd>
 								<input type="color" name='secundary_color' data-tag="body" data-attribute="font-color" value="#006b6c" class='input_colorpicker button font-color icon'/>
@@ -162,7 +168,7 @@
 								<span class="font-size icon button">
 									<div class="range-bg"><input data-tag="body" data-attribute="font-size" type="range" name="rango" id="rango" min="80" max="120" step="1"/></div>
 								</span>
-								<select id="fonts" class="font-selector icon button">
+								<select id="fonts" class="font-selector icon button" data-tag="body" data-attribute="font-family">
 									<option value="Chelsea Market">Chelsea Market</option>
 									<option value="Droid Serif" selected="selected">Droid Serif</option>
 									<option value="Ruluko">Ruluko</option>
@@ -190,7 +196,7 @@
 							<dt>Background</dt>
 							<dd>
 								<input type="color" data-tag="footer" data-attribute="background-color"  value="#006b6c" class='input_colorpicker button bg-color'/>
-								<span class="img-uploader icon button"><input type="file" /></span>
+								<span class="img-uploader icon button"><input type="file" data-tag="footer" data-attribute="background-image" /></span>
 								<select id="select1" name="bg-position" class="ximdexInput small vertical collapsable icon bg-position button">
 									<option value="lt" selected="selected"></option>
 									<option value="rt"></option>

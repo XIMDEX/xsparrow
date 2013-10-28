@@ -17,6 +17,40 @@
 		</xsl:choose>
 	</xsl:variable>
 
+	<xsl:variable name="headerBackgroundImage">
+			<xsl:choose>
+				<xsl:when test="not (//xsparrow-theme/body/header/@background-image) or 
+					//xsparrow-theme/body/header/@background-image = ''">
+					<xsl:text>none</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					url(<xsl:value-of select="concat('@@@RMximdex.dotdot(', //xsparrow-theme/body/header/@background-image,')@@@')"/>)
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<xsl:variable name="headerBackgroundPosition">
+			<xsl:choose>
+				<xsl:when test="not (//xsparrow-theme/body/header/@background-position) or //xsparrow-theme/body/header/@background-position = ''">
+					<xsl:text>none</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>                         					
+					<xsl:value-of select="//xsparrow-theme/body/header/@background-position"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="headerBackgroundRepeat">
+			<xsl:choose>
+				<xsl:when test="not (//xsparrow-theme/body/header/@background-repeat) or //xsparrow-theme/body/header/@background-repeat = ''">
+					<xsl:text>no-repeat</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="//xsparrow-theme/body/header/@background-repeat"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
 	<xsl:variable name="headerFontColor">
 		<xsl:choose>
 			<xsl:when test="not (//xsparrow-theme/body/header/@font-color) or 
@@ -179,7 +213,7 @@
 			
 
 			body{
-				background-url: <xsl:value-of select="$bodyBackgroundImage"/>;
+				background-image: <xsl:value-of select="$bodyBackgroundImage"/>;
 				background-position: <xsl:value-of select="$bodyBackgroundPosition"/>;
 				background-repeat: <xsl:value-of select="$bodyBackgroundRepeat"/>;			
 				background-color: <xsl:value-of select="$bodyBackgroundColor"/>;
@@ -188,9 +222,14 @@
 			}
 
 			div.header{
-			background-color:<xsl:value-of select="$headerBackgroundColor"/>;
-			color:<xsl:value-of select="$headerFontColor"/>;
-			text-align:<xsl:value-of select="$headerTextAlign"/>
+				background-color:<xsl:value-of select="$headerBackgroundColor"/>;
+				color:<xsl:value-of select="$headerFontColor"/>;
+				text-align:<xsl:value-of select="$headerTextAlign"/>;
+				
+				background-image: <xsl:value-of select="$headerBackgroundImage"/>;
+				background-position: <xsl:value-of select="$headerBackgroundPosition"/>;
+				background-repeat: <xsl:value-of select="$headerBackgroundRepeat"/>;
+
 			}
 			div.header h1{                      				
 			font-size:<xsl:value-of select="$headerFontSize"/>;

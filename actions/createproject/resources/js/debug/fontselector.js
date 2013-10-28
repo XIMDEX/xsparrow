@@ -38,7 +38,7 @@ $.widget('oal.fontSelector', {
       font = fonts[_j];
       _ref2 = font, font = _ref2[0], label = _ref2[1];
       //this.element.before("<link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=" + font + ":400,700,400italic,700italic'></link>");
-      $("head").append("<link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=" + font + ":400,700,400italic,700italic'></link>");
+      $("iframe").contents().find("head").append("<link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=" + font + ":400,700,400italic,700italic'></link>");
       fontEl = $("<li style=\"font-family: '" + font + "'\">" + label + "</li>");
       fontEl.data('font', font);
       if (font === this.selected) {
@@ -49,13 +49,45 @@ $.widget('oal.fontSelector', {
     }
     this.dropdown.append(this.list);
     this.element.after(this.dropdown);
-    return $('div.fontSelector .handle').click(function(e) {
 
-      var result = _this._toggleOpen();
-      e.stopPropagation();
-      return result;
-    });
-  },
+    $('li', this.list).on("click", function(e) {
+        var font, fontLi, fontName, fontOption, label, oldFont, _i, _j, _len, _len2, _ref, _ref2, _results;
+        font = $(e.target).data('font');
+        label = $(e.target).text();
+        oldFont = _this.selected;
+        if (font === oldFont) return false;
+        _this._trigger('fontChange', null, {
+          font: font,
+          oldFont: oldFont
+        });
+        _this.selected = font;
+        $('div.fontSelector h4.selected').text(label).css({
+          fontFamily: font
+        });
+        _ref = _this.list.children();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          fontLi = _ref[_i];
+          if ($(fontLi).data('font') === font) {
+            $(fontLi).addClass('selected');
+          } else if ($(fontLi).data('font') === oldFont) {
+            $(fontLi).removeClass('selected');
+          }
+        }
+        _ref2 = _this.element.children();
+        _results = [];
+        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+          fontOption = _ref2[_j];
+          fontName = $(fontOption).val();
+          if (fontName === font) {
+            _results.push($(fontOption).attr('selected', 'selected'));
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      });
+  
+  }/*,
   _toggleOpen: function() {
     var _this = this;
     if (this.list.is(':visible')) {
@@ -101,7 +133,7 @@ $.widget('oal.fontSelector', {
         return _results;
       });
     }
-  },
+  }*/,
   _setOption: function(key, value) {
     if (key === 'bold' && (value === true || value === false)) {
       this.options.bold = value;

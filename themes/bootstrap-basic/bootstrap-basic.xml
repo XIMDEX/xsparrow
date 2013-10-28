@@ -9,9 +9,9 @@
   </theme-properties>
 
 
-  <body background-color="" background-image="" background-position="right top" background-repeat="no-repeat" font-size="" font-color="">
+  <body background-color="" background-image="" background-position="right top" background-repeat="no-repeat" font-size="" font-color="" font-family="">
 
-    <header image="" background-color="#334411" background-image="" background-position="left top" background-repeat="no-repeat" font-color="#ffffff" image-side="left" font-size="42px" align="left">
+    <header image="" background-color="#334411" background-image="" background-position="left top" background-repeat="no-repeat" font-color="#ffffff" image-side="left" font-size="42px" align="left" font-family="">
       <layout left-column-size="0" main-column-size="0" right-column-size="0"></layout>
       <header-title>
         Your title2!

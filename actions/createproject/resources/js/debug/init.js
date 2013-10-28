@@ -6,8 +6,12 @@ X.actionLoaded(function (event, fn, params){
 					stylesMap:{
 						"font-color":"color",
 						"background-color": "backgroundColor",
+						"background-image": "backgroundImage",
+						"background-repeat": "backgroundRepeat",
+						"background-position": "backgroundPosition",
 						"align": "textAlign",
 						"font-size": "fontSize",
+						"font-family": "fontFamily"
 					}
 				};
 
@@ -42,7 +46,32 @@ X.actionLoaded(function (event, fn, params){
 						$(that.xml).find("header-subtitle").text(subtitleText);
 						fn("input[name='xml']").val(that.xml.documentElement.outerHTML) ;
 					});
+
+				fn("select.font-selector").fontSelector({
+					fontChange: function(widget, fonts){
+						var tag = this.getAttribute("data-tag");
+						var attribute = this.getAttribute("data-attribute");
+						if (tag=="body"){
+							var currentHtmlTag = theme.$iframe[0];	
+						}else{
+							var currentHtmlTag = theme.$iframe[0].getElementsByClassName("xsparrow-"+tag)[0];
+						}
+					
+						var currentXmlTag = theme.xml.getElementsByTagName(tag)[0];
+						theme.setCurrentHtmlTag(currentHtmlTag);
+						theme.setCurrentXmlTag(currentXmlTag);
+						theme.setXml(tag, attribute, fonts.font);
+					}
+				});
 			});
+
+			var backgroundPositionLabels = {
+				lt: "left top",
+				rt: "right top",
+				rb: "right bottom",
+				lb: "left bottom",
+				cc: "center center"
+			}
 
 	        //Click on every custom link.There is a custom link per project
 		      fn("li.theme div.actions a.custom").click(this._selectTheme.bind(this));
@@ -64,6 +93,9 @@ X.actionLoaded(function (event, fn, params){
 					that.setCurrentHtmlTag(currentHtmlTag);
 					that.setCurrentXmlTag(currentXmlTag);
 					var value =  $(this).find(":selected").val();
+					if (attribute == "background-position"){
+						value = backgroundPositionLabels[value];
+					}
 					that.setXml(tag,attribute,value);
 				},
 				//Onhover update only html related tag
@@ -188,6 +220,47 @@ X.actionLoaded(function (event, fn, params){
 	//Creating SparrowTheme object
 	var theme = new X.SparrowTheme();
 
+	fn("input[type='file']").simplefileupload({
+			url: X.baseUrl+"/?mod=XSparrow&action=createproject&method=uploadImage",
+			filename:"background-",
+			BeforeChange: function(){
+				var tag = this.getAttribute("data-tag");
+				if (tag=="body"){
+					var currentHtmlTag = theme.$iframe[0];	
+				}else{
+					var currentHtmlTag = theme.$iframe[0].getElementsByClassName("xsparrow-"+tag)[0];
+				}
+				
+				var currentXmlTag = theme.xml.getElementsByTagName(tag)[0];
+				theme.setCurrentHtmlTag(currentHtmlTag);
+				theme.setCurrentXmlTag(currentXmlTag);
+			},
+			OnChange: function(element, data){
+				theme.setXml($(element.target).attr("data-tag"),$(element.target).attr("data-attribute"),"url("+data.url+")");
+				var dataTag=$(element.target).attr("data-tag");
+				var dataAttribute=$(element.target).attr("data-attribute");
+				theme.xml.getElementsByTagName(dataTag)[0].setAttribute(dataAttribute,data.resource);
+				fn("input[name='xml']").val(theme.xml.documentElement.outerHTML) ;
+				$(element.target).parents("dd").next(".background-selectors").removeClass("hidden");
+			}
+		});
+
+	fn(".background-selectors .remove-image").on("click",function(){
+		var tag = $(this).attr("data-tag");
+		if (tag=="body"){
+			var currentHtmlTag = theme.$iframe[0];	
+		}else{
+			var currentHtmlTag = theme.$iframe[0].getElementsByClassName("xsparrow-"+tag)[0];
+		}
+		var currentXmlTag = theme.xml.getElementsByTagName(tag)[0];
+		theme.setXml(tag,"background-image","");
+		theme.setXml(tag,"background-repeat","");
+		theme.setXml(tag,"background-position","");		
+		$(this).parents(".background-selectors").addClass("hidden");
+		return false;
+
+	});
+
 	//Creating ColorPicker objects
 	fn("input.input_colorpicker").ColorPicker({
 
@@ -271,7 +344,7 @@ X.actionLoaded(function (event, fn, params){
 
 );
 
-	fn("select.font-selector").fontSelector();
+	
 
 	fn("input#title").bind("keyup", function(){
 		var texto = $(this).val();

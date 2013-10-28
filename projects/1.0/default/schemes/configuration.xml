@@ -85,7 +85,8 @@
 				</choice>
 			</attribute>
 			<attribute name="font-color" xim:type="color" />
-			<attribute name="font-size" />			
+			<attribute name="font-size" />
+			<attribute name="font-family" />
 			<ref name="header.class"/>
 			<ref name="content.class"/>
 			<ref name="footer.class"/>
@@ -121,6 +122,7 @@
 			</attribute>
 			<attribute name="font-color" xim:type="color"/>
 			<attribute name="font-size"/>
+			<attribute name="font-family" />
 			<attribute name="align">
 				<choice>
 					<value type="string"></value>

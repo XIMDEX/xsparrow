@@ -98,6 +98,7 @@ class Action_createproject extends ActionAbstract {
         $cssFolder = "/modules/XSparrow/actions/createproject/resources/css/";
 
         $this->addJs($jsFolder . "colorpicker.js");
+        $this->addJs($jsFolder . "fileupload.js");
         $this->addJs($jsFolder . "fontselector.js");
         $this->addJs($jsFolder . "ximdex.select.js");
         $this->addJs($jsFolder . "slider.js");
@@ -272,8 +273,10 @@ class Action_createproject extends ActionAbstract {
 
     private function createResourceByFolder($server, $rootFolderName, $rootFolderNodeType, $arrayXimFiles){
 
+        $this->server=$server->serverid;
         $nodeServer = new Node($server->serverid);
         $rootFolderId = $nodeServer->GetChildByName($rootFolderName);
+        $this->$rootFolderName = $rootFolderId;
         $newFolderNodeType = new NodeType();
         $newFolderNodeType->SetByName($rootFolderNodeType);        
         $this->createResource($rootFolderId, $arrayXimFiles, $newFolderNodeType->GetID());
@@ -395,10 +398,12 @@ class Action_createproject extends ActionAbstract {
 
             $docId = $io->build($data);
             if ($docId > 0  && $isXimlet && $file->name == "config") {
-                $xml = $this->request->getParam("xml");
+                
                 $docNode = new Node($docId);
-                $docNode->SetContent($xml);
+                $queries = array("//header", "//body");
+                $content = $this->setBackgroundContent($queries);
                 $content = str_replace('<?xml version="1.0"?>', '', $content);
+                $docNode->SetContent($content);
                 $ret[$file->filename] = $docId;
                 Module::log(Module::SUCCESS, "Importing " . $file->name);
             } else if (!($docId > 0))  {
@@ -415,6 +420,52 @@ class Action_createproject extends ActionAbstract {
         if (count($ret) == 0)
             $ret = false;
         return $ret;
+    }
+
+    private function setBackgroundContent($queries){
+
+        $content = $this->request->getParam("xml");
+        $domDoc = DOMDocument::loadXML($content);
+        $xpath = new DOMXPath($domDoc);
+        foreach ($queries as $query) {
+            $list = $xpath->query($query);                
+            if ($list->length){
+
+                $nodeBackground = $list->item(0);
+                $backgroundImage = $nodeBackground->getAttribute("background-image");
+                $imagePath = Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$backgroundImage}";
+                if (file_exists($imagePath)){
+
+                    $pos = strpos($backgroundImage,"_");
+                    $name = substr($backgroundImage, $pos+1);
+                    $nodeBackground->setAttribute("background-image","images/{$name}");
+
+                    $nodeTypeName = "IMAGEFILE";
+                    $nodeType = new NodeType();
+                    $nodeType->SetByName($nodeTypeName);
+                    $idNodeType = $nodeType->get('IdNodeType') > 0 ? $nodeType->get('IdNodeType') : NULL;
+
+                    $data = array(
+                      'NODETYPENAME' => $nodeTypeName,
+                      'NAME' => $name,
+                      'NODETYPE' => $idNodeType,
+                      'PARENTID' => $this->images,
+                      'CHILDRENS' => array(
+                        array(
+                            'NODETYPENAME' => 'PATH',
+                            'SRC' => $imagePath
+                        ))
+                    );
+
+                    $io = new BaseIO();
+                    $id = $io->build($data);
+                }
+                
+            }
+            
+        }
+        $content = $domDoc->saveXML();
+        return $content;
     }
 
     function insertFiles($parentId, $xFolderName, $files) {
@@ -592,6 +643,31 @@ class Action_createproject extends ActionAbstract {
             $project->setProperty('language', $this->project->lang);
         }
 
+    }
+
+    /**
+     * Upload a file from the customize project
+     */
+    public function uploadImage(){
+        
+        $filename = (isset($_SERVER['HTTP_X_FILENAME']) ? $_SERVER['HTTP_X_FILENAME'] : false);
+        $result["status"] = "error";
+        if ($filename) {            
+
+            $tmpFolder = Config::GetValue("AppRoot")."/data/tmp/XSparrow";
+            $tmpFile= FsUtils::getUniqueFile($tmpFolder, "_$filename");
+            error_log($tmpFile);
+            if (file_put_contents("$tmpFolder/{$tmpFile}_{$filename}", file_get_contents('php://input'))){
+                $result["status"] ="ok";
+                $result["url"] = Config::GetValue("UrlRoot")."/data/tmp/XSparrow/{$tmpFile}_{$filename}";
+                $result["resource"] = "{$tmpFile}_{$filename}";
+            }   
+            
+        }else{
+            error_log("Filename doesnt exist");   
+        }
+        print json_encode($result);
+        die();
     }
 
 
