@@ -159,6 +159,76 @@
 			</xsl:choose>
 		</xsl:variable>
 
+
+
+		<xsl:variable name="contentBackgroundColor">
+			<xsl:choose>
+				<xsl:when test="not (//xsparrow-theme/body/content/@background-color) or 
+					//xsparrow-theme/body/content/@background-color = ''">
+					auto
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="//xsparrow-theme/body/content/@background-color"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="contentBackgroundImage">
+			<xsl:choose>
+				<xsl:when test="not (//xsparrow-theme/body/content/@background-image) or 
+					//xsparrow-theme/body/content/@background-image = ''">
+					<xsl:text>none</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					url(<xsl:value-of select="concat('@@@RMximdex.dotdot(', //xsparrow-theme/body/content/@background-image,')@@@')"/>)
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>	
+
+		<xsl:variable name="contentBackgroundPosition">
+			<xsl:choose>
+				<xsl:when test="not (//xsparrow-theme/body/content/@background-position) or //xsparrow-theme/body/content/@background-position = ''">
+					<xsl:text>none</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>                         					
+					<xsl:value-of select="//xsparrow-theme/body/content/@background-position"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="bodyBackgroundRepeat">
+			<xsl:choose>
+				<xsl:when test="not (//xsparrow-theme/body/content/@background-position) or //xsparrow-theme/body/content/@background-repeat = ''">
+					<xsl:text>no-repeat</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="//xsparrow-theme/body/content/@background-repeat"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="contentFontSize">
+			<xsl:choose>
+				<xsl:when test="not (//xsparrow-theme/body/content/@font-size) or //xsparrow-theme/body/content/@font-size = ''">
+					auto
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="concat(//xsparrow-theme/content/body/@font-size,'%')"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="contentFontColor">
+			<xsl:choose>
+				<xsl:when test="not (//xsparrow-theme/body/content/@font-color) or //xsparrow-theme/body/content/@font-color = ''">
+					auto
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="//xsparrow-theme/body/content/@font-color"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
 		<xsl:variable name="contentAlign">
 			<xsl:choose>
 				<xsl:when test="not (//xsparrow-theme/body/content/@align) or //xsparrow-theme/body/content/@align">
@@ -220,7 +290,9 @@
 				font-size: <xsl:value-of select="$bodyFontSize"/>;
 				color: <xsl:value-of select="$bodyFontColor"/>;	
 			}
-
+			body > div.container{
+				margin-top: 48px;
+			}		
 			div.header{
 				background-color:<xsl:value-of select="$headerBackgroundColor"/>;
 				color:<xsl:value-of select="$headerFontColor"/>;
@@ -234,6 +306,15 @@
 			div.header h1{                      				
 			font-size:<xsl:value-of select="$headerFontSize"/>;
 
+			}
+			
+			div.container div.content{
+				background-image: <xsl:value-of select="$contentBackgroundImage"/>;
+				background-position: <xsl:value-of select="$contentBackgroundPosition"/>;
+				background-repeat: <xsl:value-of select="$contentBackgroundRepeat"/>;			
+				background-color: <xsl:value-of select="$contentBackgroundColor"/>;
+				font-size: <xsl:value-of select="$contentFontSize"/>;
+				color: <xsl:value-of select="$contentFontColor"/>;	
 			}
 			
 			div.container div.content p{
@@ -256,6 +337,10 @@
 
 			.navbar .nav li a.navbar-link:hover{                    	   
 			color: 	<xsl:value-of select="$MenuHoverFontColor"/>;                           
+			}
+
+			.col-md-0, col-sm-0{
+				display:none;
 			}		
 
 

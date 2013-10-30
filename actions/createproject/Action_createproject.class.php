@@ -78,6 +78,7 @@ class Action_createproject extends ActionAbstract {
             $themeDescription["name"] = $theme->_shortname;
             $themeDescription["title"] = $theme->_title;
             $themeDescription["description"] = $theme->_description;
+            $themeDescription["configurable"] = $theme->configurable=="1"? true: false;
 
             $arrayTheme[] = $themeDescription;
         }
@@ -87,6 +88,7 @@ class Action_createproject extends ActionAbstract {
             "name" => $proposalName,
             "themes" => $arrayTheme
         );
+
 
 
     	$extraPath = "";
@@ -244,15 +246,22 @@ class Action_createproject extends ActionAbstract {
         );
 
         $nodeServer->class->AddChannel($physicalServerId, $this->project->channel);
-        Module::log(Module::SUCCESS, "Server creation O.K.");
-
+        Module::log(Module::SUCCESS, "Server creation O.K.");        
         
         // common
         $arrayCommon = $server->getCommon();
+
         $this->createResourceByFolder($server, "common", "CommonFolder", $arrayCommon);
 
+
+        
+        $arrayTemplates = $server->getTemplates();
+        foreach($arrayTemplates as $template){
+            $this->insertFiles($serverId, "templates", array($template));
+        }       
+
         //images
-        $arrayImages = $server->getImages();
+        $arrayImages = $server->getImages();        
         $this->createResourceByFolder($server, "images", "ImagesFolder", $arrayImages);
 
         //Css
@@ -656,7 +665,6 @@ class Action_createproject extends ActionAbstract {
 
             $tmpFolder = Config::GetValue("AppRoot")."/data/tmp/XSparrow";
             $tmpFile= FsUtils::getUniqueFile($tmpFolder, "_$filename");
-            error_log($tmpFile);
             if (file_put_contents("$tmpFolder/{$tmpFile}_{$filename}", file_get_contents('php://input'))){
                 $result["status"] ="ok";
                 $result["url"] = Config::GetValue("UrlRoot")."/data/tmp/XSparrow/{$tmpFile}_{$filename}";
@@ -682,14 +690,15 @@ class Action_createproject extends ActionAbstract {
         $theme = new Theme($themeName);
         $configXmlPath = Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$theme->_shortname}/configuration.xml";
         $docxapXslPath = Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$theme->version}/{$theme->projectName}/docxap.xsl";
-        error_log(Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$theme->_shortname}/configuration.xml");
-        error_log(Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$theme->version}/{$theme->projectName}/docxap.xsl");
+        
         $domDoc = new DOMDocument();
         $domDoc->preserveWhiteSpace = false;
         $domDoc->validateOnParse = true;
         $domDoc->formatOutput = true;
 
         $xsltHandler = new XSLT();
+
+        error_log("$configXmlPath ====== $docxapXslPath");
         $xsltHandler->setXML($configXmlPath);
         $xsltHandler->setXSL($docxapXslPath);
 

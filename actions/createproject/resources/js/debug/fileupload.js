@@ -6,7 +6,7 @@ $(function() {
    		defaults: {
    			OnChange: null,
         BeforeChange:null,
-   			maxSize:300000,
+   			maxSize:600000,
    			fileTypes:["image/jpeg", "image/png", "image/gif"],
    			filename: false
    		},

@@ -48,6 +48,7 @@ class Theme {
 	 * @var String
 	 */
 	public $version;
+	public $configurable;
 
 	public $projectName;
 	public $project=false;
@@ -159,7 +160,6 @@ class Theme {
 		}
 
 		$fullPath = Config::GetValue("AppRoot").MODULE_XSPARROW_PATH.THEMES_FOLDER."/$themesFolderPath/$themesFolderPath.xml";
-
 		if (file_exists($fullPath)){
 			$xmlContent = FsUtils::file_get_contents($fullPath);
 			$result = $this->isValidXml($xmlContent)? $xmlContent : false;
@@ -186,6 +186,7 @@ class Theme {
 				$nodeList0 = $xpathObj->query('/xsparrow-theme/theme-properties');
 				if ($nodeList0->length){
 					$nodeThemeProperty = $nodeList0->item(0);
+					$this->configurable = $nodeThemeProperty->getAttribute("configurable");
 					foreach ($nodeThemeProperty->childNodes as $child) {
 						$nodeName = "_".$child->nodeName;
 						$shortNodeName = str_replace("theme-", "", $nodeName);
@@ -319,7 +320,6 @@ class Theme {
 						$result[] = $theme;
 						$numFound++;
 					}
-
 				}
 			}
 

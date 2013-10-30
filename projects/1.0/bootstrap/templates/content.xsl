@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
   <xsl:template name="content" match="content">
-    <xsl:param name="mainColumnWidth"/>
     <xsl:variable name="xsparrowClass">
       <xsl:if test="/docxap/@transformer='XSparrow'">
         <xsl:value-of select="concat('xsparrow-',local-name())"/>
@@ -11,23 +10,64 @@
       <xsl:value-of select="local-name()"/>      
     </xsl:variable>
 
-    <div class="container">
+    <xsl:variable name="leftColumnWidth">
+      <xsl:choose>
+        <xsl:when test="@left-column='yes'">
+          <xsl:choose>
+            <xsl:when test="@right-column='yes'">
+              <xsl:value-of select="3"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="6"/>
+            </xsl:otherwise>
+          </xsl:choose>          
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="0"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <xsl:variable name="rightColumnWidth">
+      <xsl:choose>
+        <xsl:when test="@right-column='yes'">
+          <xsl:choose>
+            <xsl:when test="@left-column='yes'">
+              <xsl:value-of select="3"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="6"/>
+            </xsl:otherwise>
+          </xsl:choose>          
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="0"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <xsl:variable name="mainColumnWidth">
+      <xsl:value-of select="12 - $leftColumnWidth - $rightColumnWidth"/>
+    </xsl:variable>
+
+    <div class="container {$xsparrowClass} {$localName}" uid="{@uid}" >
       <xsl:choose>
         <xsl:when test="/docxap/@transformer='XSparrow'">
-          <xsl:variable name="column-width" select="12"/>
-          <div class="col-md-{$column-width}">
-            <div class="row {$xsparrowClass} {$localName}">
-              <div class="col-md-12" uid="{@uid}">
-                <div class="page-header" uid="{@uid}">
-                  <h1>
-                    Custom this theme
-                  </h1>
-                </div>              
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </p>
-              </div>
-            </div>
-          </div>
+          
+            <xsl:call-template name="left-column">
+              <xsl:with-param name="width" select="$leftColumnWidth"/>
+            </xsl:call-template>
+          
+          <xsl:call-template name="main-column">
+            <xsl:with-param name="width" select="$mainColumnWidth"/>
+          </xsl:call-template>
+
+          
+            <xsl:call-template name="right-column">
+              <xsl:with-param name="width" select="$rightColumnWidth"/>
+            </xsl:call-template>
+          
+            
           </xsl:when>
           <xsl:otherwise>
             <xsl:choose>
@@ -46,7 +86,6 @@
           </xsl:choose>
         </xsl:otherwise>
       </xsl:choose>  
-      
     </div>     
   </xsl:template>
 </xsl:stylesheet>

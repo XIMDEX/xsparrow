@@ -11,7 +11,8 @@
 				</xsl:otherwise>
 			</xsl:choose>	
    		</xsl:variable>   		
-		<p uid="{@uid}" class="{$isLead} text-{@text-align} text-{@text-style}">
+		<p uid="{@uid}" class="{$isLead} text-{@text-align} text-{@text-style}
+			">
 			<xsl:apply-templates/>
 		</p>
    	</xsl:template>

@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <xsparrow-theme version="1.0" project="bootstrap">
 
-  <theme-properties>
+  <theme-properties configurable="1">
     <theme-shortname>bootstrap-basic</theme-shortname>
     <theme-title>Basic Bootstrap theme</theme-title>
     <theme-description>Portal basado en Bootstrap</theme-description>
@@ -9,7 +9,7 @@
   </theme-properties>
 
 
-  <body background-color="" background-image="" background-position="right top" background-repeat="no-repeat" font-size="" font-color="" font-family="">
+  <body background-color="" background-image="" background-position="right top" background-repeat="no-repeat">
 
     <header image="" background-color="#334411" background-image="" background-position="left top" background-repeat="no-repeat" font-color="#ffffff" image-side="left" font-size="42px" align="left" font-family="">
       <layout left-column-size="0" main-column-size="0" right-column-size="0"></layout>
@@ -21,7 +21,7 @@
       </header-subtitle>
       <breadcrumb background-color="" font-color="" current-font-color=""/>
     </header>
-    <content left_column="No" right_column="No" align="" />
+    <content left-column="no" right-column="no" align="" background-color="" background-image="" background-position="right top" background-repeat="no-repeat" font-size="" font-color="" font-family="" />
     <footer background-color="" font-color="">
       <layout left-column-size="0" main-column-size="0" right-column-size="0"></layout>[Footer]
     </footer>

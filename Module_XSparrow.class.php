@@ -55,7 +55,7 @@ class Module_XSparrow extends Module {
 		$this->loadConstructorSQL("XSparrow.constructor.sql");
 
 		//Create a temp file for the templates of every projects
-		//It will ease the theme previews.
+		//It will ease the theme previews.		
 		$this->buildTempXslForThemes();	
 
 
@@ -70,7 +70,6 @@ class Module_XSparrow extends Module {
 	*For every project build a xsl file in tmp/Xsparrow/ with all the xsl definitions
 	*/
 	private function buildTempXslForThemes(){
-		
 		$arrayThemes = Theme::getAllThemes();
 		foreach ($arrayThemes as $theme) {
 			$theme->buildTempResources();

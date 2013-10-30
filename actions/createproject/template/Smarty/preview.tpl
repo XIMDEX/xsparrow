@@ -23,12 +23,4 @@
  *  @version $Revision$
  *}
 
- <div class="header">
-<h1 class="header-title">Header</h1>
- </div>
- <div class="content">
-	Content
- </div>
- <div class="footer">
-	Footer
- </div>
+<div></div>

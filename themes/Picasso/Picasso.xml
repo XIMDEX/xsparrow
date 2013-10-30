@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<xsparrow-theme version="0.0" project="Picasso">
+
+  <theme-properties configurable="0">
+    <theme-shortname>Picasso</theme-shortname>
+    <theme-title>Picasso theme</theme-title>
+    <theme-description>No configurable</theme-description>
+    <theme-style>Picasso</theme-style>
+  </theme-properties>
+
+  </xsparrow-theme>

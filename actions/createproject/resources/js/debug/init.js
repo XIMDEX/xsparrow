@@ -12,7 +12,50 @@ X.actionLoaded(function (event, fn, params){
 						"align": "textAlign",
 						"font-size": "fontSize",
 						"font-family": "fontFamily"
+					},
+					layout: {
+						"bootstrap-basic": {
+							"1col":{
+								xml: {
+									"left-column":"no",
+									"right-column":"no"
+								},
+								style: {
+									"left-column": "col-md-0 col-sm-0",
+									"main-column": "col-md-12 col-sm-12",
+									"right-column": "col-md-0 col-sm-0"
+								}
+							
+								},
+							"2col": {
+								xml: {
+									"left-column":"yes",
+									"right-column":"no"
+								},
+								style: {
+									"left-column":"col-md-6 col-sm-6",
+									"main-column":"col-md-6 col-sm-6",
+									"right-column": "col-md-0 col-sm-0"
+								}
+								
+							},
+							"3col":{
+								xml: {
+									"left-column":"yes",
+									"right-column":"yes"
+								},
+								style:{
+									"left-column":"col-md-3 col-sm-3",
+									"main-column":"col-md-6 col-sm-6",
+									"right-column":"col-md-3 col-sm-3",
+								}								
+							},
+							styles: ["col-sm-0","col-md-0","col-md-3","col-md-6","col-md-12","col-sm-3","col-sm-6","col-sm-12"],
+							elements: ["left-column","main-column","right-column"]
+
+						}
 					}
+
 				};
 
 		
@@ -23,7 +66,7 @@ X.actionLoaded(function (event, fn, params){
 		$iframe: false, //iframe object. Just to make faster 
 		$currentHtmlTag: false, //iframe html tag associated to the focus input
 		$currentXmlTag: false, //Xml tag associated to focus input
-
+		themeName:"",
 		/**
 		* Init function for X.SparrowTheme object		
 		*/
@@ -52,9 +95,9 @@ X.actionLoaded(function (event, fn, params){
 						var tag = this.getAttribute("data-tag");
 						var attribute = this.getAttribute("data-attribute");
 						if (tag=="body"){
-							var currentHtmlTag = theme.$iframe[0];	
+							var currentHtmlTag = that.$iframe[0];	
 						}else{
-							var currentHtmlTag = theme.$iframe[0].getElementsByClassName("xsparrow-"+tag)[0];
+							var currentHtmlTag = that.$iframe[0].getElementsByClassName("xsparrow-"+tag)[0];
 						}
 					
 						var currentXmlTag = theme.xml.getElementsByTagName(tag)[0];
@@ -82,21 +125,50 @@ X.actionLoaded(function (event, fn, params){
 				onChange: function(){
 					var tag = this.getAttribute("data-tag");
 					var attribute = this.getAttribute("data-attribute");
-					var currentHtmlTag = false;
-					if (tag == "body"){
-						currentHtmlTag = that.$iframe[0];
-					}else{
-						currentHtmlTag = that.$iframe[0].getElementsByClassName("xsparrow-"+tag)[0];	
-					}
-			        
-					var currentXmlTag = that.xml.getElementsByTagName(tag)[0];
-					that.setCurrentHtmlTag(currentHtmlTag);
-					that.setCurrentXmlTag(currentXmlTag);
 					var value =  $(this).find(":selected").val();
-					if (attribute == "background-position"){
-						value = backgroundPositionLabels[value];
+					if (attribute !== "layout"){
+						var currentHtmlTag = false;
+						if (tag == "body"){
+							currentHtmlTag = that.$iframe[0];
+						}else{
+							currentHtmlTag = that.$iframe[0].getElementsByClassName("xsparrow-"+tag)[0];	
+						}
+				        
+						var currentXmlTag = that.xml.getElementsByTagName(tag)[0];
+						that.setCurrentHtmlTag(currentHtmlTag);
+						that.setCurrentXmlTag(currentXmlTag);						
+						if (attribute == "background-position"){
+							value = backgroundPositionLabels[value];
+						}
+						that.setXml(tag,attribute,value);
+					}else{
+						var theme = X.Sparrow.layout[that.themeName];
+						if (theme){
+							if (theme[value]){
+								for(var i = 0, len = theme.elements.length; i < len; i++){
+									for (var j =0, len2 = theme.styles.length; j < len2; j++){
+										$("."+theme.elements[i], that.$iframe).removeClass(theme.styles[j]);
+									}
+								}
+								var style = theme[value]["style"];
+								var xml = theme[value]["xml"];
+								for (var i in style){
+									if (style.hasOwnProperty(i)){
+										$("."+i, that.$iframe).addClass(style[i]);
+									}
+								}
+
+								for (var i in xml){
+									if (style.hasOwnProperty(i)){
+										that.xml.getElementsByTagName(tag)[0].setAttribute(i, xml[i]);	
+									}
+								}
+								fn("input[name='xml']").val(that.xml.documentElement.outerHTML) ;
+
+							}		
+						}
 					}
-					that.setXml(tag,attribute,value);
+					
 				},
 				//Onhover update only html related tag
 				onHover: function(event){
@@ -165,7 +237,8 @@ X.actionLoaded(function (event, fn, params){
 			var themeName = $(event.currentTarget).attr("data-theme");
 			var src = X.restUrl+"?action=createproject&mod=XSparrow&method=loadPreview";
 			src += "&theme="+themeName;
-			$("iframe").attr("src",src);			
+			$("iframe").attr("src",src);
+			this.themeName = themeName;			
 
 			var actionWidth = fn("div.action_container").width()*-1;
 			fn("input[name='theme']").val(themeName);
@@ -358,8 +431,10 @@ X.actionLoaded(function (event, fn, params){
   		});
 
   	
-  	fn("li.theme div.actions a.select").click(function(){
-
+  	fn("li.theme div.actions a.select").click(function(event){
+		      
+		var themeName = $(event.currentTarget).attr("data-theme");
+		fn("input[name='theme']").val(themeName);
 		return false;
   	});
 

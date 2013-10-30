@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<xsparrow-theme version="0.0" project="The_Hobbit">
+
+  <theme-properties configurable="0">
+    <theme-shortname>the_hobbit</theme-shortname>
+    <theme-title>Hobbit theme</theme-title>
+    <theme-description>Portal demo de Ximdex</theme-description>
+    <theme-style>default</theme-style>
+  </theme-properties>
+</xsparrow-theme>

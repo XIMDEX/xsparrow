@@ -102,27 +102,29 @@ class XSparrowProject{
                 $filePath = $templateFile->getPath();
                 $filePath = str_replace(Config::GetValue("AppRoot"), Config::GetValue("UrlRoot"), $filePath);
                 $templateContent = '<xsl:include href="'.$filePath.'"/>';
-		    	$xslContent .= $templateContent;		    
-                $cont++;
+		    	$xslContent .= $templateContent;
         	}
         }
 
-        $docxapContent = $arrayTemplates["docxap"]->getContent();
-        $docxapContent = preg_replace("/\<xsl:include.*href=\".*templates_include.xsl\".*\>/",$xslContent,$docxapContent);
+        if (array_key_exists("docxap", $arrayTemplates)){
+            $docxapContent = $arrayTemplates["docxap"]->getContent();
+            $docxapContent = preg_replace("/\<xsl:include.*href=\".*templates_include.xsl\".*\>/",$xslContent,$docxapContent);
 
-        $tmpFolder = Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$this->version}/{$this->name}";
-        if (!is_dir($tmpFolder)){
-        	if (!mkdir($tmpFolder,0777,true)){
-        		//print in log
-        		return false;
-        	}
+            $tmpFolder = Config::GetValue("AppRoot")."/data/tmp/XSparrow/{$this->version}/{$this->name}";
+            if (!is_dir($tmpFolder)){
+                if (!mkdir($tmpFolder,0777,true)){
+                    //print in log
+                    return false;
+                }
+            }
+
+            //Replace @@@RMximdex.dotdot()
+            $replacement=Config::GetValue("UrlRoot")."/data/tmp/XSparrow/{$themeFolder}/$1";
+            $docxapContent = preg_replace("/@@@RMximdex.dotdot\((.+)\)@@@/", $replacement, $docxapContent);
+
+            FsUtils::file_put_contents("$tmpFolder/docxap.xsl", $docxapContent); 
         }
-
-        //Replace @@@RMximdex.dotdot()
-        $replacement=Config::GetValue("UrlRoot")."/data/tmp/XSparrow/{$themeFolder}/$1";
-        $docxapContent = preg_replace("/@@@RMximdex.dotdot\((.+)\)@@@/", $replacement, $docxapContent);
-
-       	FsUtils::file_put_contents("$tmpFolder/docxap.xsl", $docxapContent);
+       
 
         return $this;
 	}
@@ -138,7 +140,6 @@ class XSparrowProject{
 		foreach ($servers as $server) {
 
 			$commons = $server->getCommon();
-            error_log(print_r($commons,true));
             $this->buildTempFiles($commons, "common", $themeFolder);
 			
             $css = $server->getCSS();
@@ -166,7 +167,6 @@ class XSparrowProject{
                     
                 }
             }
-            error_log("Escribiendo en $fullFolderPath/$fileName");
             FsUtils::file_put_contents("$fullFolderPath/$fileName", $content);  
         }
     }

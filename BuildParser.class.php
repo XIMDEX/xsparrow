@@ -78,9 +78,15 @@ class BuildParser {
 				return false;
 			}
 			XMD_Log::error(LOG_PREFIX." Build file doesn't found in this path: $buildFilePath. It will load Default project");
-		}else{
+		}else{			
 			$this->doc = DOMDocument::load($buildFilePath);
+			if (!$this->doc){
+				error_log("Error al cargar $buildFilePath");
+			}
 			$this->xpath = new DOMXPath($this->doc);
+			if (!$this->xpath){
+				error_log("Error al cargar XPath para $buildFilePath");
+			}
 		}
 
 	}
@@ -214,9 +220,11 @@ class Loader_Project extends Loader_AbstractNode {
 		$query = sprintf("//section[@nodetypename='SERVER']");
 		$items = $this->xpath->query($query, $this->node);
 		$ret = array();
-		foreach ($items as $item) {
-			$ret[] = new Loader_Server($item, $this->xpath, $this->getPath());
-		}
+		if ($items){
+			foreach ($items as $item) {
+				$ret[] = new Loader_Server($item, $this->xpath, $this->getPath());
+			}	
+		}		
 		return $ret;
 	}
 
@@ -239,11 +247,13 @@ class Loader_Project extends Loader_AbstractNode {
 		$path = $this->getPath() . '/templates';
 	    $files = FsUtils::readFolder($path, false);	    
 		$ret = array();
-		foreach ($files as $file) {
-            if (preg_match(sprintf('/\.%s$/', $extension), $file)) {
-				$ret[] = new Loader_XimFile($nodetypename, "$path/$file");
-            }
-		}
+		if ($files){
+			foreach ($files as $file) {
+	            if (preg_match(sprintf('/\.%s$/', $extension), $file)) {
+					$ret[] = new Loader_XimFile($nodetypename, "$path/$file");
+	            }
+			}
+		}	
 		return $ret;
 	}
 }
@@ -290,8 +300,7 @@ class Loader_Section extends Loader_AbstractNode {
 		$files = FsUtils::readFolder($path, false);
 		$recursiveRet = $ret = array();
 		if ($files){
-			foreach ($files as $file) {
-				error_log("File: ".$file);
+			foreach ($files as $file) {				
 				$newRecursiveFolderName = "";
 				if (is_dir("$path/$file")){
 					$newRecursiveFolderName = "$recursiveFolderName/$file";
@@ -305,7 +314,7 @@ class Loader_Section extends Loader_AbstractNode {
 	}
 
 	public function getImages($recursiveFolderName="") {
-		$path = $this->getPath() . "/images$recursiveFolderName";		
+		$path = $this->getPath() . "/images$recursiveFolderName";
 		$files = FsUtils::readFolder($path, false);
 		$recursiveRet = $ret = array();
 		if ($files){
@@ -343,20 +352,22 @@ class Loader_Section extends Loader_AbstractNode {
 		return $ret;
 	}
 
-	public function getPTD($type="XSL") {
+	public function getTemplates($type="XSL") {
 
-		$extension = $type == 'PTD' ? 'xml' : 'xsl';
-		$nodetypename = $type == 'PTD' ? 'TEMPLATE' : 'XSLTEMPLATE';
+		//Backward compatibility. Allow xml transformer.
+		$extension = $type == 'XSL' ? 'xsl': 'xml';
+		$nodetypename = $type == 'XSL' ? 'XSLTEMPLATE': 'TEMPLATE';
 
-
-		$path = $this->getPath() . '/ximptd';
-		$files = FsUtils::readFolder($path, false);
+		$path = $this->getPath() . '/templates';
+	    $files = FsUtils::readFolder($path, false);	    
 		$ret = array();
-		foreach ($files as $file) {
-			if (preg_match(sprintf('/\.%s$/', $extension), $file)) {
-				$ret[] = new Loader_XimFile($nodetypename, "$path/$file");
+		if ($files){
+			foreach ($files as $file) {
+	            if (preg_match(sprintf('/\.%s$/', $extension), $file)) {
+					$ret[] = new Loader_XimFile($nodetypename, "$path/$file");
+	            }
 			}
-		}
+		}	
 		return $ret;
 	}
 }

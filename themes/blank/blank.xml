@@ -1,44 +1,29 @@
 <?xml version="1.0" ?>
-<xsparrow-theme version="1.0" >
+<xsparrow-theme version="1.0" project="default">
 
-  <theme-properties>
+  <theme-properties configurable="0">
     <theme-shortname>blank</theme-shortname>
     <theme-title>Blank theme</theme-title>
-    <theme-description>Portal completo con un nivel de navegación</theme-description>
+    <theme-description>Easy blank theme</theme-description>
+    <theme-style>dafault</theme-style>
   </theme-properties>
 
 
-  <main>
+  <body background-color="" background-image="" background-position="right top" background-repeat="no-repeat" font-size="" font-color="" font-family="">
 
-    <header image="" background-color="#334411" background-image="" background-position="left top" background-repeat="no-repeat" font-color="" image-side="left" font-size="48px" border="Top/Bottom" border-color="#b3b282">
+    <header image="" background-color="#334411" background-image="" background-position="left top" background-repeat="no-repeat" font-color="#ffffff" image-side="left" font-size="42px" align="left" font-family="">
       <layout left-column-size="0" main-column-size="0" right-column-size="0"></layout>
-      <header-title font-color="#a48b59" font-size="" align="left">
+      <header-title>
         Your title2!
       </header-title>
-      <header-subtitle font-color="#561111" font-size="1.5em" align="left">
+      <header-subtitle>
         Write something about this website
       </header-subtitle>
       <breadcrumb background-color="" font-color="" current-font-color=""/>
     </header>
-
-    <content left_column="No" right_column="No" background-color="" background-image="" background-position="right top" background-repeat="no-repeat">
-			<layout left-column-size="0" main-column-size="0" right-column-size="0"></layout>
-      <left-column>[Left Column]</left-column>
-      <main-column>
-        <title-element font-color="#c7b58e" font-size="" border-bottom="none" border-size="0px">
-          Define the title format
-        </title-element>
-        <subtitle-element font-color="" font-size="" border-bottom="none" border-size="1px">
-          Edit your own subtitle
-        </subtitle-element>
-        <link-element font-color="#f03836" font-color-hover="#59afae" border-bottom="dotted">
-          sample link
-        </link-element>[Main Column]
-      </main-column>
-      <right-column>[Right Column]</right-column>
-    </content>
+    <content left_column="No" right_column="No" align="" />
     <footer background-color="" font-color="">
       <layout left-column-size="0" main-column-size="0" right-column-size="0"></layout>[Footer]
     </footer>
-  </main>
+  </body>
 </xsparrow-theme>
