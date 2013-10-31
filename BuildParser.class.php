@@ -427,7 +427,7 @@ class Loader_Server extends Loader_Section {
 class Loader_XimDOC extends Loader_AbstractNode {
 
 	protected function getValidAttributes() {
-		return array('name', 'nodetypename', 'templatename', 'channel', 'language');
+		return array('name', 'nodetypename', 'description', 'templatename', 'channel', 'language');
 	}
 
 	public function getPath() {

@@ -288,7 +288,7 @@ class XSparrowProjectManager{
 			//For every project in the version folder
 			$projectFolders = FsUtils::readFolder($projectRootFolder."/".$projectVersionFolder,false);
 			foreach ($projectFolders as $projectFolder) {
-				$result[$projectVersionFolder][$projectFolder] = new XSparrowProject($projectFolder, $projectVersionFolder);
+				$result[$projectVersionFolder][$projectFolder] = new XSparrowProjectManager($projectFolder, $projectVersionFolder);
 			}
 		}
 

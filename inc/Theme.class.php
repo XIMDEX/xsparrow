@@ -29,7 +29,7 @@ ModulesManager::file('/conf/xsparrow.conf', 'XSparrow');
 ModulesManager::file('/inc/fsutils/FsUtils.class.php');
 ModulesManager::file('/inc/xml/validator/XMLValidator.class.php');
 ModulesManager::file('/inc/xml/validator/XMLValidator_RNG.class.php');
-ModulesManager::file('/modules/XSparrow/inc/XSparrowProject.class.php');
+ModulesManager::file('/modules/XSparrow/inc/XSparrowProjectManager.class.php');
 
 /**
  * Manage a XSparrow theme. 
@@ -87,7 +87,7 @@ class Theme {
 			XMD_Log::warning(LOG_PREFIX."Unable to load $theme theme.");
 		}else if ($xml){
 			$this->getThemeProperties();
-			$this->project = new XSparrowProject($this->projectName,$this->version);
+			$this->project = new XSparrowProjectManager($this->projectName,$this->version);
 		}
 	}
 

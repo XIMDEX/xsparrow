@@ -32,7 +32,10 @@ ModulesManager::file(MODULE_XSPARROW_PATH . '/BuildParser.class.php');
 ModulesManager::file('/inc/helper/DebugLog.class.php');
 ModulesManager::file('/actions/addximlet/Action_addximlet.class.php');
 ModulesManager::file(MODULE_XSPARROW_PATH . '/inc/Theme.class.php');
-ModulesManager::file(MODULE_XSPARROW_PATH . '/XSparrowProject.class.php');
+ModulesManager::file(MODULE_XSPARROW_PATH . '/XSparrowProjectManager.class.php');
+ModulesManager::file(MODULE_XSPARROW_PATH . '/inc/model/XSparrowProject.class.php');
+ModulesManager::file(MODULE_XSPARROW_PATH . '/inc/model/XSparrowRelProjectDocs.class.php');
+ModulesManager::file(MODULE_XSPARROW_PATH . '/inc/model/XSparrowInstalledProjects.class.php');
 ModulesManager::file('/inc/xml/XSLT.class.php');
 
 /**
@@ -153,20 +156,34 @@ class Action_createproject extends ActionAbstract {
             return false;
         }
 
-        $servers = $this->theme->project->getServers();
-        $schemas = $this->theme->project->getSchemes();
-        $templates = $this->theme->project->getTemplates();
+        $xsparrowProject= new XSparrowProject();
+        $projectToSearch = array($this->theme->projectName, $this->theme->version);
+        $projectFound = $xsparrowProject->find("idproject","name=%s AND version=%s", $projectToSearch, MONO);
         
-        foreach($schemas as $schema){
-            $this->schemas = array_merge($this->schemas, $this->insertFiles($projectId, "schemas", array($schema)));
-        }
-
-        foreach($templates as $template){
-            $this->insertFiles($projectId, "templates", array($template));
-        }
-
-        foreach ($servers as $server) {
-            $this->insertServer($projectId, $server);
+        if (is_array($projectFound) && count($projectFound)){
+            $idXsparrowProject = $projectFound[0];
+            $installedProject = new XSparrowInstalledProjects();
+            
+            $installedProject->set("idnode",$projectId);
+            $installedProject->set("idproject", $idXsparrowProject);
+            error_log("Se instalará: $projectId y $idXsparrowProject");
+            $installedProject->add();
+    
+            $servers = $this->theme->project->getServers();
+            $schemas = $this->theme->project->getSchemes();
+            $templates = $this->theme->project->getTemplates();
+            
+            foreach($schemas as $schema){
+                $this->schemas = array_merge($this->schemas, $this->insertFiles($projectId, "schemas", array($schema)));
+            }
+    
+            foreach($templates as $template){
+                $this->insertFiles($projectId, "templates", array($template));
+            }
+    
+            foreach ($servers as $server) {
+                $this->insertServer($projectId, $server);
+            }
         }
         
         $template = "success";

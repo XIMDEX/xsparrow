@@ -30,6 +30,9 @@
 ModulesManager::file('/inc/modules/Module.class.php');
 ModulesManager::file('/modules/XSparrow/conf/xsparrow.conf');
 ModulesManager::file('/modules/XSparrow/inc/Theme.class.php');
+ModulesManager::file('/modules/XSparrow/inc/model/XSparrowProject.class.php');
+ModulesManager::file('/modules/XSparrow/inc/model/XSparrowRelProjectDocs.class.php');
+ModulesManager::file('/modules/XSparrow/BuildParser.class.php');
 
 class Module_XSparrow extends Module {
 
@@ -53,15 +56,36 @@ class Module_XSparrow extends Module {
 
     // get constructor SQL
 		$this->loadConstructorSQL("XSparrow.constructor.sql");
+		$install_ret = parent::install();
+
+		//Save all projects
+		$arrayProjects = XSparrowProjectManager::getAllXSparrowProjects();
+		foreach ($arrayProjects as $version => $projectsByVersion) {
+			foreach ($projectsByVersion as $projectName => $projectObject) {
+				$xsparrowProject = new XSparrowProject();
+				$xsparrowProject->set("name",$projectName);
+				$xsparrowProject->set("version", $version);
+				$xsparrowProject->add();
+				$idProject = $xsparrowProject->get("idproject");
+				$servers = $projectObject->getServers();
+				foreach ($servers as $server) {
+					$arrayXimDocs = $server->getXimDocs();
+					foreach ($arrayXimDocs as $ximDoc) {
+						$relProjectDoc = new XSparrowRelProjectDocs();
+						$relProjectDoc->set("idproject", $idProject);
+						$relProjectDoc->set("doc", $ximDoc->__get("name"));
+						$relProjectDoc->set("description", $ximDoc->__get("description"));
+						$relProjectDoc->set("schema", $ximDoc->__get("templatename"));
+						$relProjectDoc->add();
+					}
+				}
+			}
+		}
 
 		//Create a temp file for the templates of every projects
 		//It will ease the theme previews.		
 		$this->buildTempXslForThemes();	
 
-
-
-    // Install !
-		$install_ret = parent::install();
 
 	}
 
