@@ -196,7 +196,7 @@
 			</xsl:choose>
 		</xsl:variable>
 
-		<xsl:variable name="bodyBackgroundRepeat">
+		<xsl:variable name="contentBackgroundRepeat">
 			<xsl:choose>
 				<xsl:when test="not (//xsparrow-theme/body/content/@background-position) or //xsparrow-theme/body/content/@background-repeat = ''">
 					<xsl:text>no-repeat</xsl:text>
