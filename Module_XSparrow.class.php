@@ -75,7 +75,8 @@ class Module_XSparrow extends Module {
 						$relProjectDoc->set("idproject", $idProject);
 						$relProjectDoc->set("doc", $ximDoc->__get("name"));
 						$relProjectDoc->set("description", $ximDoc->__get("description"));
-						$relProjectDoc->set("schema", $ximDoc->__get("templatename"));
+						$relProjectDoc->set("relaxng", $ximDoc->__get("templatename"));						
+						$relProjectDoc->set("filepath", $ximDoc->getPath());
 						$relProjectDoc->add();
 					}
 				}

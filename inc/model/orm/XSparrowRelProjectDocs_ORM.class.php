@@ -35,7 +35,8 @@ class XSparrowRelProjectDocs_ORM extends GenericData{
 				'idproject' => array('type' => "int(12)", 'not_null' => 'false'),
 				'doc' => array('type' => "varchar(255)", 'not_null' => 'true'),
 				'description' => array('type' => "varchar(255)", 'not_null' => 'true'),
-				'schema' => array('type' => "varchar(255)", 'not_null' => 'false')
+				'relaxng' => array('type' => "varchar(255)", 'not_null' => 'false'),
+				'filepath' => array('type' => "varchar(255)", 'not_null' => 'false')				
 				);
 	
 	var $_indexes = array('idrel');
@@ -43,7 +44,8 @@ class XSparrowRelProjectDocs_ORM extends GenericData{
 	var $idproject;
 	var $doc="";
 	var $description="";
-	var $schema = "";
+	var $relaxng = "";
+	var $filepath="";
 }
 
 ?>

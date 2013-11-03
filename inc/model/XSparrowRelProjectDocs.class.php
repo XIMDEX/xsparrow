@@ -28,6 +28,7 @@
 ModulesManager::file('/modules/XSparrow/inc/model/orm/XSparrowRelProjectDocs_ORM.class.php');
 
 class XSparrowRelProjectDocs extends XSparrowRelProjectDocs_ORM{
+
 }
 
 ?>

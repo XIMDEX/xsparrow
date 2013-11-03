@@ -41,17 +41,7 @@ class Action_createxmlcontainer extends ActionAbstract {
 
 		$idNode = $this->request->getParam("nodeid");
 		$node = new Node($idNode);
-		$idProject = $node->getProject();
-		$xsparrowInstalledProjects = new XSparrowInstalledProjects();
-		$isXSparrowModule = false;
-		$arrayResults = $xsparrowInstalledProjects->find("idproject","idnode=%s",array($idProject),MONO);
-		if (is_array($arrayResults) && count($arrayResults)){
-			$isXSparrowModule = true;
-			$idxsparrowProject = $arrayResults[0];
 
-		}else{
-
-		}
 		$idNode = $node->get('IdNode');
 
 		if (empty($idNode)) {
@@ -59,28 +49,40 @@ class Action_createxmlcontainer extends ActionAbstract {
 			die(_("Error with parameters"));
 		}
 
-		// Gets default schema for XML through propInheritance
-
-		$templates = null;
-		$section = $node->getSection();
 		
-		if ($section > 0) {
-		
-			$section = new Node($section);
-			$hasTheme = (bool) count($section->getProperty('theme'));
-			
-			if ($hasTheme) {
-				$templates = $section->getProperty('theme_visualtemplates');
-			}
-		}
-
-		$templates = $templates === null ? $node->getSchemas() : $templates;
-
+		//Is a XSparrow module with templates
 		$templateArray = array();
-		if (!is_null($templates)) {
-			foreach ($templates as $idTemplate) {
-				$templateNode = new Node($idTemplate);
-				$templateArray[] = array('idTemplate' => $idTemplate, 'Name' => $templateNode->get('Name'));
+		$idxsparrowProject = $this->isXSparrowNode($idNode);
+		if ($idxsparrowProject){
+
+			$isXSparrowModule = true;
+			$arrayDocs = $this->getRelProjectDocsByIdProject($idxsparrowProject);
+			foreach ($arrayDocs as $doc) {
+				$templateArray[] = array('idTemplate' => $doc->get("doc"),'Name' => $doc->get("description"));
+			}
+
+		}else{
+			$templates = null;
+			$section = $node->getSection();
+			
+			if ($section > 0) {
+			
+				$section = new Node($section);
+				$hasTheme = (bool) count($section->getProperty('theme'));
+				
+				if ($hasTheme) {
+					$templates = $section->getProperty('theme_visualtemplates');
+				}
+			}
+
+			$templates = $templates === null ? $node->getSchemas() : $templates;
+
+		
+			if (!is_null($templates)) {
+				foreach ($templates as $idTemplate) {
+					$templateNode = new Node($idTemplate);
+					$templateArray[] = array('idTemplate' => $idTemplate, 'Name' => $templateNode->get('Name'));
+				}
 			}
 		}
 
@@ -116,13 +118,37 @@ class Action_createxmlcontainer extends ActionAbstract {
 
     }
 
+
+    private function isXSparrowNode($idNode){
+    	// Gets default schema for XML through propInheritance
+    	$node = new Node($idNode);
+		$idProject = $node->getProject();
+		$xsparrowInstalledProjects = new XSparrowInstalledProjects();
+		$isXSparrowModule = false;
+		$arrayResults = $xsparrowInstalledProjects->find("idproject","idnode=%s",array($idProject),MONO);
+		return (is_array($arrayResults) && count($arrayResults))? $arrayResults[0]: false;
+    }
+
+    private function getRelProjectDocsByIdProject($idProject){
+
+    	$relProjecDocs = new XSparrowRelProjectDocs();
+    	$arrayIds = $relProjecDocs->find("idrel", "idproject=%s", array($idProject), MONO);
+    	$result = array();
+    	if ($arrayIds){
+    		foreach ($arrayIds as $idRel) {    			
+    			$result[] = new XSparrowRelProjectDocs($idRel);
+    		}
+    	}
+    	return $result;
+    }
+
     function createxmlcontainer() {
 
     	$idNode = $this->request->getParam('nodeid');
     	$node = new Node($idNode);
     	$idNode = $node->get('IdNode');
 		$formChannels = array();
-	
+		$idxsparrowProject = $this->isXSparrowNode($idNode);
 
     	if (!($idNode > 0)) {
     		$this->messages->add(_('An error ocurred estimating parent node,')
@@ -133,9 +159,37 @@ class Action_createxmlcontainer extends ActionAbstract {
     		return false;
     	}
 
+
     	$aliases = $this->request->getParam('aliases');
     	$name = $this->request->getParam('name');
-    	$idTemplate = $this->request->getParam('id_template');
+    	if ($idxsparrowProject){
+    		$filepath = false;
+    		$templateName = $this->request->getParam('id_template');
+    		$relDocProject = new XSparrowRelProjectDocs();
+    		$arrayResults = $relDocProject->find("filepath, relaxng", "idproject=%s and doc=%s", array($idxsparrowProject, $templateName));
+
+    		if ($arrayResults && count($arrayResults)){
+    			$filepath = $arrayResults[0]["filepath"];
+    			$schemaName = $arrayResults[0]["relaxng"];
+    			$idProject = $node->getProject();
+    			$project = new Node($idProject);
+    			$idSchemaFolder = $project->getChildByName("schemas");
+    			$schemaFolder = new Node($idSchemaFolder);
+    			$idTemplate = $schemaFolder->getChildByName($schemaName.".xml");
+    			if (!$idTemplate){
+    				$this->messages->add(_('An error ocurred getting the schema file,')
+	    			._(' operation will be aborted, contact with your administrator'), MSG_TYPE_ERROR);
+	    			$values = array('name' => 'Desconocido',
+	    				'messages' => $this->messages->messages);
+	    			$this->render($values, null, 'default-3.0.tpl');
+	    			return false;
+    			}
+    		}
+
+    	}else{
+    		$idTemplate = $this->request->getParam('id_template');	
+    	}
+    	
 
     	// Creating container
 
@@ -204,7 +258,16 @@ class Action_createxmlcontainer extends ActionAbstract {
 			foreach ($languages as $idLanguage) {
 				$result = $this->_insertLanguage($idLanguage, $nodeType->get('Name'), $name, $idContainer, $idTemplate, 
 					$formChannels, $aliases);
-
+				if ($result && $idxsparrowProject && $filepath){
+					$content = FsUtils::file_get_contents($filepath);
+					error_log($filepath);
+					error_log("1111111111111");
+					error_log($content);
+					error_log($result);
+					error_log("=============");
+					$newDoc = new Node($result);
+					$newDoc->setContent($content);
+				}
 				if ($master > 0) {
 					if ($master != $idLanguage) {
 						$setSymLinks[] = $result;

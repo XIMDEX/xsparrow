@@ -18,7 +18,8 @@ CREATE TABLE `XSparrowRelProjectDocs` (
   `idproject` int(12) unsigned NOT NULL default "0",
   `doc` varchar(255) NOT NULL default "",
   `description`varchar(255) NOT NULL default "",
-  `schema`varchar(255) NOT NULL default "",
+  `relaxng`varchar(255) NOT NULL default "",
+  `filepath`varchar(255) NOT NULL default "",
    PRIMARY KEY  (`idrel`)
 );
 
