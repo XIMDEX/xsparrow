@@ -1,5 +1,35 @@
 <content>
-<region cols="12" offset="0">
-cosaaaaaaaa
-</region>
-</content>
+ <region cols="4" offset="0">
+  <subtitle>Lorem ipsum</subtitle>
+  <paragraph type="" text-align="" text-style="">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do 
+   eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad 
+   minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip 
+   ex ea commodo consequat. Duis aute irure dolor in reprehenderit in 
+   voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur 
+   sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+    mollit anim id est laborum.</paragraph>
+  </region>
+  <region cols="4" offset="0">
+   <subtitle>Lorem ipsum</subtitle>
+   <paragraph type="" text-align="" text-style="">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do 
+    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad 
+    minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip 
+    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in 
+    voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur 
+    sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+     mollit anim id est laborum.</paragraph>
+   </region>
+   <region cols="4" offset="0">
+    <subtitle>Lorem ipsum</subtitle>
+    <paragraph type="" text-align="" text-style="">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do 
+     eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad 
+     minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip 
+     ex ea commodo consequat. Duis aute irure dolor in reprehenderit in 
+     voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur 
+     sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+      mollit anim id est laborum.</paragraph>
+    </region>
+    <region cols="11" offset="0">
+     <image src="" cols="12" style="circle" width="0" height="0"/>
+    </region>
+   </content>
